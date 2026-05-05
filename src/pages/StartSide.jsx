@@ -4,7 +4,9 @@ function StartSide() {
   return (
     <>
       <article className="flex flex-col items-center ">
-        <h1 className="flex text-primary text-center text-4xl">Hjerteskærm</h1>
+        <h1 className="flex text-primary font-display text-center text-4xl font-semibold">
+          Hjerteskærm
+        </h1>
         <img src={krop} class="frontbg" className="flex w-270 h-480" alt="" />
       </article>
     </>
