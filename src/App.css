@@ -28,3 +28,7 @@ body {
   src: url("./assets/fonts/flamatrial-semibold.otf") format("opentype");
   font-weight: 600;
 }
+
+.animate-ping {
+  animation-duration: 2s;
+}
