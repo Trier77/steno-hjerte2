@@ -1,11 +1,11 @@
-import nyfront from '../assets/nyfront.png'
+import nyfront from "../assets/nyfront.png";
 
-function StartSide(){
-    return(
-        <h1>do you see dis</h1>
-        
-    )
+function StartSide() {
+  return (
+    <>
+      <h1 className="text-primary text-center text-4xl">Hjerteskærm</h1>
+    </>
+  );
 }
 
-
-export default StartSide
+export default StartSide;
