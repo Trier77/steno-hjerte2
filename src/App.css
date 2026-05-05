@@ -2,8 +2,10 @@
 
 @theme {
   --color-primary: #39516f;
-  --color-bg: #faf5ed;
   --color-secondary: #e5e9ed;
+  --color-bg: #faf5ed;
+  --color-overlay-light: #e5e9ed;
+  --color-overlay-dark: #472e30;
   --font-display: "Flama", sans-serif;
 }
 
@@ -31,4 +33,8 @@ body {
 
 .animate-ping {
   animation-duration: 2s;
+}
+
+.quarter-circle {
+  border-radius: 0 0 100% 0;
 }
