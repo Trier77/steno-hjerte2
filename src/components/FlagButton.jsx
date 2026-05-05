@@ -36,7 +36,7 @@ function FlagButton() {
   return (
     <div
       ref={ref}
-      className="fixed bottom-6 right-6 flex flex-col items-center gap-3"
+      className="fixed bottom-6 right-6 flex flex-col items-center gap-3 z-50"
     >
       <button
         onClick={() => handleSwitch(otherLang)}
