@@ -1,6 +1,6 @@
 import neuron from '../assets/neuron.svg'
-
 import NeuronButton from '../components/NeuronButton'
+import TekstModul from '../components/TekstModul'
 
 function Depression(){
     return(
@@ -13,9 +13,7 @@ function Depression(){
       <NeuronButton src={neuron} alt="Valg 4" glowColor="#ec4899" />
     </div>
 
-    <section className='absolute w-screen h-100 bg-amber-500 bottom-0'>
-
-    </section>
+    <TekstModul />
         </>
        
     )
