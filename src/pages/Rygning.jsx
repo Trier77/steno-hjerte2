@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import FlagButton from "../components/FlagButton";
+import BackButton from "../components/BackButton";
 
 const SIDES = {
   left: {
@@ -96,18 +97,13 @@ export default function Rygning() {
       className="relative w-full h-screen overflow-hidden select-none"
     >
       <FlagButton />
+      <BackButton />
       {/* Left background - Rygning Historisk */}
-      <div
-        className="absolute inset-0"
-        style={{ backgroundColor: "#e5e9ed", opacity: 0.5 }}
-      />
+      <div className="absolute inset-0 bg-overlay-light opacity-50" />
 
-      {/* Right background - Rygning i dag - clips from slider */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 bg-overlay-dark opacity-50"
         style={{
-          backgroundColor: "#472e30",
-          opacity: 0.5,
           clipPath: `inset(0 0 0 ${sliderPercent})`,
           transition,
         }}
