@@ -21,7 +21,7 @@ function NeuronButton({ src, alt, glowColor }) {
         src={src}
         alt={alt}
         className={`
-          transition-all duration-300 cursor-pointer
+          w-64 h-auto transition-all duration-300 cursor-pointer
           ${selected
             ? 'scale-125 ring-4 ring-white rounded-xl'
             : 'scale-100'
