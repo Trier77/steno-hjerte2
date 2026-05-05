@@ -1,34 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import FlagButton from "../components/FlagButton";
 import BackButton from "../components/BackButton";
-
-const SIDES = {
-  left: {
-    label: "Rygning Historisk",
-    bg: "#e5e9ed",
-    stats: [
-      { value: "60%", description: "mænd røg i 1950" },
-      { value: "10%", description: "Kvinder røg i 1950" },
-    ],
-    heading: "Rygning Historisk",
-    intro:
-      "Læger har vidst siden midten af 1900-tallet, at rygning kan give hjertekarsygdom. Mænd har historisk set røget mere end kvinder. I 1950 røg 60% af alle mænd. Det samme gjaldt kun for 10% af kvinderne.",
-    body: 'Derfor blev blodpropper i hjertet opfattet som en mandesygdom eller en "direktørsygdom" fordi det i høj grad var mænd med store cigarer, store maver og manglende motion, der blev ramt.',
-  },
-  right: {
-    label: "Rygning i dag",
-    bg: "#472e30",
-    stats: [
-      { value: "25%", description: "Større risiko for kvinder end mænd" },
-    ],
-    heading: "Rygning i dag",
-    intro: "I dag ryger lige mange kvinder og mænd.",
-    body: 'Og faktisk har det vist sig, at de kvinder der ryger har op mod 25% større risiko for at få en hjertesygdom, end mænd der ryger. Rygning er derfor "farligere" for kvinders hjerter end for mænds. Forskere er ikke klar over, hvad årsagen er.',
-  },
-};
+import { useLanguage } from "../context/LanguageContext";
+import translations from "../translations";
 
 export default function Rygning() {
   const containerRef = useRef(null);
+  const { language, visible } = useLanguage();
+  const SIDES = translations[language].rygning;
   const [sliderX, setSliderX] = useState(0.5);
   const [isDragging, setIsDragging] = useState(false);
   const [isSnapping, setIsSnapping] = useState(false);
@@ -63,11 +42,11 @@ export default function Rygning() {
     setIsDragging(false);
     setIsSnapping(true);
     if (sliderX < 0.25) {
-      setSliderX(0); // snap fully to left edge
+      setSliderX(0);
     } else if (sliderX > 0.75) {
-      setSliderX(1); // snap fully to right edge
+      setSliderX(1);
     } else {
-      setSliderX(0.5); // snap back to center
+      setSliderX(0.5);
     }
     setTimeout(() => setIsSnapping(false), 400);
   };
@@ -98,9 +77,11 @@ export default function Rygning() {
     >
       <FlagButton />
       <BackButton />
-      {/* Left background - Rygning Historisk */}
+
+      {/* Left background */}
       <div className="absolute inset-0 bg-overlay-light opacity-50" />
 
+      {/* Right background */}
       <div
         className="absolute inset-0 bg-overlay-dark opacity-50"
         style={{
@@ -109,17 +90,8 @@ export default function Rygning() {
         }}
       />
 
-      {/* Lung image goes here later */}
+      {/* Lung image/animation goes here later */}
       {/* <img src={lungImage} className="absolute inset-0 w-full h-full object-contain z-10 pointer-events-none" /> */}
-
-      {/* Title pill */}
-      <div className="absolute top-8 left-0 right-0 z-20 flex justify-center">
-        <div className="bg-secondary rounded-full px-6 py-2">
-          <span className="text-primary font-display font-semibold text-lg">
-            {side ? side.label : "Træk for at sammenligne"}
-          </span>
-        </div>
-      </div>
 
       {/* Slider line + handle */}
       <div
@@ -154,41 +126,55 @@ export default function Rygning() {
         <div className="w-2 flex-1 bg-white opacity-60" />
       </div>
 
-      {/* Bottom content */}
+      {/* Fade wrapper - fades on language switch */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-10 text-white"
-        style={{
-          opacity: activeSide ? 1 : 0,
-          transform: activeSide ? "translateY(0)" : "translateY(20px)",
-          transition: "opacity 0.4s ease, transform 0.4s ease",
-          pointerEvents: activeSide ? "auto" : "none",
-        }}
+        style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
       >
-        {side && (
-          <>
-            <h2 className="font-display font-semibold text-6xl mb-4">
-              {side.heading}
-            </h2>
-            <p className="font-display font-light text-2xl mb-3 opacity-90">
-              {side.intro}
-            </p>
-            <p className="font-display font-light text-xl mb-10 opacity-70">
-              {side.body}
-            </p>
-            <div className="flex gap-12">
-              {side.stats.map((stat, i) => (
-                <div key={i}>
-                  <p className="font-display font-semibold text-8xl">
-                    {stat.value}
-                  </p>
-                  <p className="font-display font-semibold text-2xl opacity-90 mt-1">
-                    {stat.description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+        {/* Title pill */}
+        <div className="absolute top-8 left-0 right-0 z-20 flex justify-center">
+          <div className="bg-secondary rounded-full px-6 py-2">
+            <span className="text-primary font-display font-semibold text-lg">
+              {side ? side.label : SIDES.dragLabel}
+            </span>
+          </div>
+        </div>
+
+        {/* Bottom content */}
+        <div
+          className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-10 text-white"
+          style={{
+            opacity: activeSide ? 1 : 0,
+            transform: activeSide ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 0.4s ease, transform 0.4s ease",
+            pointerEvents: activeSide ? "auto" : "none",
+          }}
+        >
+          {side && (
+            <>
+              <h2 className="font-display font-semibold text-6xl mb-4">
+                {side.heading}
+              </h2>
+              <p className="font-display font-light text-2xl mb-3 opacity-90">
+                {side.intro}
+              </p>
+              <p className="font-display font-light text-xl mb-10 opacity-70">
+                {side.body}
+              </p>
+              <div className="flex gap-12">
+                {side.stats.map((stat, i) => (
+                  <div key={i}>
+                    <p className="font-display font-semibold text-8xl">
+                      {stat.value}
+                    </p>
+                    <p className="font-display font-semibold text-2xl opacity-90 mt-1">
+                      {stat.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
