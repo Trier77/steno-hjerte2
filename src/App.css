@@ -4,8 +4,27 @@
   --color-primary: #39516f;
   --color-bg: #faf5ed;
   --color-secondary: #e5e9ed;
+  --font-display: "Flama", sans-serif;
 }
 
 body {
   background-color: var(--color-bg);
+}
+
+@font-face {
+  font-family: "Flama";
+  src: url("./assets/fonts/flamatrial-book.otf") format("opentype");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "Flama";
+  src: url("./assets/fonts/flamatrial-basic.otf") format("opentype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Flama";
+  src: url("./assets/fonts/flamatrial-semibold.otf") format("opentype");
+  font-weight: 600;
 }
