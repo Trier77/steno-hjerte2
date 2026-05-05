@@ -10,9 +10,9 @@ function NavButton({ icon, label, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center bg-secondary rounded-full cursor-pointer border-2 border-primary"
+      className="flex items-center bg-secondary rounded-full cursor-pointer w-44"
     >
-      <div className="w-14 h-14 shrink-0 flex items-center justify-center overflow-hidden">
+      <div className="w-14 h-14 shrink-0 overflow-hidden -ml-0.5 ">
         <img
           src={icons[icon]}
           alt=""
