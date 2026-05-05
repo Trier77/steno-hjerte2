@@ -7,8 +7,12 @@ function StartSide() {
         <h1 className="flex text-primary font-display text-center text-4xl font-semibold">
           Hjerteskærm
         </h1>
-        <img src={krop} class="frontbg" className="flex w-270 h-480" alt="" />
+        <p>undertitel</p>        
       </article>
+      <article className="absolute left-0 top-0">
+        <img src={krop} class="frontbg" className="flex w-270 h-480" alt="" />
+        {/* skal knappe komponenterne ligge inden i article */}
+        </article>
     </>
   );
 }
