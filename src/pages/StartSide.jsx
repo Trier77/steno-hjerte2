@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 import VideoOverlay from "../components/VideoOverlay";
 import QuizOverlay from "../components/QuizOverlay";
+import FlagButton from "../components/FlagButton";
 
 function StartSide() {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ function StartSide() {
 
   return (
     <>
+      <FlagButton />
       {showVideo && (
         <VideoOverlay onClose={closeVideo} visible={videoVisible} />
       )}

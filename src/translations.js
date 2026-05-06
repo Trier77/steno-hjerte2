@@ -46,7 +46,7 @@ const translations = {
       nextBtn: "Næste spørgsmål",
       resultsTitle: "Resultat",
       resultsText:
-        "Du svarede rigtigt på {score} ud af {total} spørgsmål. Du klarede dig bedre end {percentile}% af alle besøgende!",
+        "Sådan, godt klaret! Du gjorde det bedre end {percentile} af alle vores besøgende!",
       playAgainBtn: "Prøv igen",
       correctLabel: "Rigtigt!",
       wrongLabel: "Forkert!",
@@ -159,7 +159,7 @@ const translations = {
       nextBtn: "Next question",
       resultsTitle: "Results",
       resultsText:
-        "You answered {score} out of {total} questions correctly. You did better than {percentile}% of all visitors!",
+        "Well done! You did better than {percentile} of all our visitors!",
       playAgainBtn: "Try again",
       correctLabel: "Correct!",
       wrongLabel: "Wrong!",

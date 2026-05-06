@@ -27,67 +27,95 @@ function getPercentile(score, total) {
   }
 }
 
-// SCREENS
 const SCREEN_INTRO = "intro";
 const SCREEN_QUESTION = "question";
 const SCREEN_EXPLANATION = "explanation";
 const SCREEN_RESULTS = "results";
 
 function QuizOverlay({ onClose, visible }) {
-  const { language, visible: langVisible } = useLanguage();
+  const { language } = useLanguage();
   const t = translations[language].quiz;
 
   const [screen, setScreen] = useState(SCREEN_INTRO);
+  const [fadeIn, setFadeIn] = useState(true);
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [showCorrect, setShowCorrect] = useState(false);
   const [score, setScore] = useState(0);
   const [percentile, setPercentile] = useState(50);
 
   const question = t.questions[currentQ];
   const isCorrect = selectedAnswer === question?.correct;
 
+  const transitionTo = (nextScreen) => {
+    setFadeIn(false);
+    setTimeout(() => {
+      setScreen(nextScreen);
+      setFadeIn(true);
+    }, 300);
+  };
+
   const handleStart = () => {
-    setScreen(SCREEN_QUESTION);
     setCurrentQ(0);
     setScore(0);
     setSelectedAnswer(null);
+    setShowCorrect(false);
+    transitionTo(SCREEN_QUESTION);
   };
 
   const handleAnswer = (index) => {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(index);
-    if (index === question.correct) {
-      setScore((s) => s + 1);
-    }
-    setTimeout(() => setScreen(SCREEN_EXPLANATION), 600);
+    if (index === question.correct) setScore((s) => s + 1);
+
+    // After 800ms show the correct answer highlighted
+    setTimeout(() => setShowCorrect(true), 800);
+
+    // After 1600ms transition to explanation
+    setTimeout(() => {
+      setShowCorrect(false);
+      transitionTo(SCREEN_EXPLANATION);
+    }, 1600);
   };
 
   const handleNext = () => {
     const nextQ = currentQ + 1;
     if (nextQ >= t.questions.length) {
-      const finalScore = isCorrect ? score : score;
-      saveScore(finalScore, t.questions.length);
-      setPercentile(getPercentile(finalScore, t.questions.length));
-      setScreen(SCREEN_RESULTS);
+      saveScore(score, t.questions.length);
+      setPercentile(getPercentile(score, t.questions.length));
+      transitionTo(SCREEN_RESULTS);
     } else {
       setCurrentQ(nextQ);
       setSelectedAnswer(null);
-      setScreen(SCREEN_QUESTION);
+      setShowCorrect(false);
+      transitionTo(SCREEN_QUESTION);
     }
   };
 
   const handlePlayAgain = () => {
-    setScreen(SCREEN_INTRO);
     setCurrentQ(0);
     setScore(0);
     setSelectedAnswer(null);
+    setShowCorrect(false);
+    transitionTo(SCREEN_INTRO);
   };
 
   const getOptionStyle = (index) => {
     if (selectedAnswer === null) return "bg-secondary text-primary";
-    if (index === question.correct) return "bg-green-500 text-white";
-    if (index === selectedAnswer) return "bg-red-400 text-white";
-    return "bg-secondary text-primary opacity-50";
+
+    // Show correct answer fully highlighted
+    if (showCorrect && index === question.correct) {
+      return "bg-primary text-white";
+    }
+
+    // Selected answer - low opacity red or green
+    if (index === selectedAnswer) {
+      return index === question.correct
+        ? "bg-green-400/50 text-primary"
+        : "bg-red-400/50 text-primary";
+    }
+
+    return "bg-secondary text-primary opacity-40";
   };
 
   return (
@@ -130,99 +158,125 @@ function QuizOverlay({ onClose, visible }) {
           </svg>
         </button>
 
-        {/* INTRO SCREEN */}
-        {screen === SCREEN_INTRO && (
-          <div className="flex flex-col items-center justify-between h-full px-10 py-16">
-            <h2 className="font-display font-semibold text-primary text-7xl mt-8">
-              {t.title}
-            </h2>
-            <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
-              {t.intro}
-            </p>
-            <button
-              onClick={handleStart}
-              className="bg-secondary text-primary font-display font-semibold text-4xl rounded-full px-16 py-5 mb-4"
-            >
-              {t.startBtn}
-            </button>
-          </div>
-        )}
-
-        {/* QUESTION SCREEN */}
-        {screen === SCREEN_QUESTION && (
-          <div className="flex flex-col h-full px-10 py-16">
-            {/* Progress indicator */}
-            <p className="font-display font-light text-primary text-xl mb-4 opacity-60">
-              {currentQ + 1} / {t.questions.length}
-            </p>
-
-            {/* Question */}
-            <h2 className="font-display font-semibold text-primary text-3xl mb-10 leading-snug flex-1">
-              {question.question}
-            </h2>
-
-            {/* Answer options */}
-            <div className="flex flex-col gap-4 mb-8">
-              {question.options.map((option, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleAnswer(i)}
-                  className={`w-full rounded-2xl px-6 py-5 font-display font-semibold text-2xl text-left transition-all duration-300 ${getOptionStyle(i)}`}
-                >
-                  {option}
-                </button>
-              ))}
+        {/* Screen content with fade animation */}
+        <div
+          className="flex flex-col h-full"
+          style={{
+            opacity: fadeIn ? 1 : 0,
+            transform: fadeIn ? "translateY(0)" : "translateY(16px)",
+            transition: "opacity 0.3s ease, transform 0.3s ease",
+          }}
+        >
+          {/* INTRO SCREEN */}
+          {screen === SCREEN_INTRO && (
+            <div className="flex flex-col items-center justify-between h-full px-10 py-16">
+              <h2 className="font-display font-semibold text-primary text-7xl mt-8">
+                {t.title}
+              </h2>
+              <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
+                {t.intro}
+              </p>
+              <button
+                onClick={handleStart}
+                className="bg-secondary text-primary font-display font-semibold text-4xl rounded-full px-16 py-5 mb-4"
+              >
+                {t.startBtn}
+              </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* EXPLANATION SCREEN */}
-        {screen === SCREEN_EXPLANATION && (
-          <div className="flex flex-col items-center justify-between h-full px-10 py-16">
-            {/* Correct/Wrong label */}
-            <div
-              className={`rounded-full px-10 py-3 mt-8 ${isCorrect ? "bg-green-500" : "bg-red-400"}`}
-            >
-              <span className="font-display font-semibold text-white text-3xl">
-                {isCorrect ? t.correctLabel : t.wrongLabel}
-              </span>
+          {/* QUESTION SCREEN */}
+          {screen === SCREEN_QUESTION && (
+            <div className="flex flex-col h-full px-10 py-12">
+              {/* Question */}
+              <div className="flex-1 flex items-center justify-center">
+                <h2 className="font-display font-semibold text-primary text-4xl text-center leading-snug">
+                  {question.question}
+                </h2>
+              </div>
+
+              {/* Answer options */}
+              <div className="flex flex-col gap-5 mb-6">
+                {question.options.map((option, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleAnswer(i)}
+                    className={`w-full rounded-2xl px-6 py-7 font-display font-semibold text-3xl text-center transition-all duration-500 ${getOptionStyle(i)}`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+
+              {/* Progress dots */}
+              <div className="flex items-center justify-center gap-3 mb-4">
+                {t.questions.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`rounded-full bg-primary transition-all duration-300 ${
+                      i === currentQ
+                        ? "w-5 h-5 opacity-100"
+                        : "w-3 h-3 opacity-50"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
+          )}
 
-            {/* Explanation */}
-            <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
-              {question.explanation}
-            </p>
+          {/* EXPLANATION SCREEN */}
+          {screen === SCREEN_EXPLANATION && (
+            <div className="flex flex-col items-center justify-between h-full px-10 py-16">
+              <div className="rounded-full px-10 py-3 mt-8 bg-primary">
+                <span className="font-display font-semibold text-white text-3xl">
+                  {isCorrect ? t.correctLabel : t.wrongLabel}
+                </span>
+              </div>
+              <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
+                {question.explanation}
+              </p>
+              <button
+                onClick={handleNext}
+                className="bg-secondary text-primary font-display font-semibold text-3xl rounded-full px-16 py-5 mb-4"
+              >
+                {currentQ + 1 >= t.questions.length
+                  ? t.resultsTitle
+                  : t.nextBtn}
+              </button>
+            </div>
+          )}
 
-            {/* Next button */}
-            <button
-              onClick={handleNext}
-              className="bg-secondary text-primary font-display font-semibold text-3xl rounded-full px-16 py-5 mb-4"
-            >
-              {currentQ + 1 >= t.questions.length ? t.resultsTitle : t.nextBtn}
-            </button>
-          </div>
-        )}
+          {/* RESULTS SCREEN */}
+          {screen === SCREEN_RESULTS && (
+            <div className="flex flex-col items-center justify-between h-full px-10 py-16">
+              <h2 className="font-display font-semibold text-primary text-5xl mt-8 text-center">
+                {t.resultsTitle}
+              </h2>
 
-        {/* RESULTS SCREEN */}
-        {screen === SCREEN_RESULTS && (
-          <div className="flex flex-col items-center justify-between h-full px-10 py-16">
-            <h2 className="font-display font-semibold text-primary text-6xl mt-8">
-              {t.resultsTitle}
-            </h2>
-            <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
-              {t.resultsText
-                .replace("{score}", score)
-                .replace("{total}", t.questions.length)
-                .replace("{percentile}", percentile)}
-            </p>
-            <button
-              onClick={handlePlayAgain}
-              className="bg-secondary text-primary font-display font-semibold text-3xl rounded-full px-16 py-5 mb-4"
-            >
-              {t.playAgainBtn}
-            </button>
-          </div>
-        )}
+              <div className="flex flex-col items-center gap-4">
+                <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
+                  {t.resultsText
+                    .split("{percentile}")[0]
+                    .replace("{score}", score)
+                    .replace("{total}", t.questions.length)}
+                </p>
+                <p className="font-display font-semibold text-primary text-8xl">
+                  {percentile}%
+                </p>
+                <p className="font-display font-light text-primary text-2xl text-center">
+                  {t.resultsText.split("{percentile}")[1]}
+                </p>
+              </div>
+
+              <button
+                onClick={handlePlayAgain}
+                className="bg-secondary text-primary font-display font-semibold text-3xl rounded-full px-16 py-5 mb-4"
+              >
+                {t.playAgainBtn}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
