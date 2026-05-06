@@ -102,9 +102,9 @@ export default function Rygning() {
           transition,
         }}
       >
-        <div className="w-2 flex-1 bg-white opacity-60" />
+        <div className="w-2 flex-1 bg-ui-box" />
         <div
-          className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-xl cursor-grab active:cursor-grabbing shrink-0"
+          className="w-24 h-24 rounded-full bg-ui-box flex items-center justify-center shadow-xl cursor-grab active:cursor-grabbing shrink-0"
           onMouseDown={handlePointerDown}
           onTouchStart={handlePointerDown}
         >
@@ -123,18 +123,26 @@ export default function Rygning() {
             />
           </svg>
         </div>
-        <div className="w-2 flex-1 bg-white opacity-60" />
+        <div className="w-2 flex-1 bg-ui-box" />
       </div>
 
       {/* Fade wrapper - fades on language switch */}
       <div
         style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
       >
-        {/* Title pill */}
-        <div className="absolute top-8 left-0 right-0 z-20 flex justify-center">
-          <div className="bg-secondary rounded-full px-6 py-2">
-            <span className="text-primary font-display font-semibold text-lg">
-              {side ? side.label : SIDES.dragLabel}
+        <div
+          className="absolute top-8 left-0 right-0 z-40 flex justify-center px-6"
+          style={{
+            opacity: activeSide
+              ? 0
+              : Math.max(0, 1 - Math.abs(sliderX - 0.5) * 8),
+            transition: "opacity 0.3s ease",
+            pointerEvents: activeSide ? "none" : "auto",
+          }}
+        >
+          <div className="bg-ui-box rounded-full px-8 py-4">
+            <span className="text-primary font-display font-semibold text-3xl text-center">
+              {SIDES.dragLabel}
             </span>
           </div>
         </div>
@@ -154,10 +162,10 @@ export default function Rygning() {
               <h2 className="font-display font-semibold text-6xl mb-4">
                 {side.heading}
               </h2>
-              <p className="font-display font-light text-2xl mb-3 opacity-90">
+              <p className="font-display font-light text-2xl mb-3">
                 {side.intro}
               </p>
-              <p className="font-display font-light text-xl mb-10 opacity-70">
+              <p className="font-display font-light text-2xl mb-3">
                 {side.body}
               </p>
               <div className="flex gap-12">

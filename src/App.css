@@ -6,6 +6,7 @@
   --color-bg: #faf5ed;
   --color-overlay-light: #e5e9ed; /*Det er den samme som vores secondary-color men gjorde for sorterings  */
   --color-overlay-dark: #472e30;
+  --color-ui-box: #f1f1f1;
   --font-display: "Flama", sans-serif;
 }
 

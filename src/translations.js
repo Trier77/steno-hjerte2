@@ -21,7 +21,7 @@ const translations = {
           { value: "25%", description: "Større risiko for kvinder end mænd" },
         ],
       },
-      dragLabel: "Træk for at sammenligne",
+      dragLabel: "Rygning og hjerte-kar-sygdomme - før og nu",
     },
     kraeftbehandling: {
       steps: [
@@ -59,7 +59,7 @@ const translations = {
           { value: "25%", description: "Higher risk for women than men" },
         ],
       },
-      dragLabel: "Drag to compare",
+      dragLabel: "Smoking and cardiovascular disease - then and now",
     },
     kraeftbehandling: {
       steps: [
