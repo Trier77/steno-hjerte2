@@ -4,7 +4,7 @@
   --color-primary: #39516f;
   --color-secondary: #e5e9ed;
   --color-bg: #faf5ed;
-  --color-overlay-light: #e5e9ed;
+  --color-overlay-light: #e5e9ed; /*Det er den samme som vores secondary-color men gjorde for sorterings  */
   --color-overlay-dark: #472e30;
   --font-display: "Flama", sans-serif;
 }
@@ -37,4 +37,13 @@ body {
 
 .quarter-circle {
   border-radius: 0 0 100% 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

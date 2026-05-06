@@ -23,6 +23,20 @@ const translations = {
       },
       dragLabel: "Træk for at sammenligne",
     },
+    kraeftbehandling: {
+      steps: [
+        {
+          heading: "Brystkræft og hjertesygdomme",
+          body: "Hvis man er blevet behandlet for brystkræft, har man større risiko for senere at udvikle en hjertesygdom. 99 % af patienter med brystkræft er kvinder.\n\n9 ud af 10 af brystkræftpatienter får stråling som en del af deres behandling.",
+          link: "Prøv at fjerne kræftknuden med stråling",
+        },
+        {
+          heading: "Stråling mod brystkræft kan skade hjertet",
+          body: "Du fjernede kræftknuden, men der var også en del af strålingen, der ramte hjertet. Det kan give ar på hjertemusklen og føre til sygdom.\n\nForskningen i sammenhængen mellem (behandling af) brystkræft og hjertesygdom er især vokset inden for de seneste 20–25 år.",
+          link: null,
+        },
+      ],
+    },
   },
   en: {
     rygning: {
@@ -46,6 +60,25 @@ const translations = {
         ],
       },
       dragLabel: "Drag to compare",
+    },
+    kraeftbehandling: {
+      steps: [
+        {
+          heading: "The heart was damaged",
+          body: "Treatment for breast cancer can make the heart sick. Both radiation and chemotherapy can damage the heart's healthy cells and increase the risk of heart disease later in life.",
+          link: null,
+        },
+        {
+          heading: "Breast cancer treatment",
+          body: "[ English text from museum ]",
+          link: "Try to remove the tumor",
+        },
+        {
+          heading: "Breast cancer treatment",
+          body: "[ English text from museum ]",
+          link: "Check up on the Heart",
+        },
+      ],
     },
   },
 };
