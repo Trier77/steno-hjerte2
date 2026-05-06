@@ -2,6 +2,8 @@ import { useState } from 'react'
 import neuron from '../assets/neuron.svg'
 import NeuronButton from '../components/NeuronButton'
 import TekstModul from '../components/TekstModul'
+import BackButton from "../components/BackButton";
+import FlagButton from "../components/FlagButton";
 
 
    const buttons = [
@@ -16,6 +18,9 @@ function Depression() {
 
   return (
     <>
+      <FlagButton />
+      <BackButton />
+
     <div className="flex gap-12 justify-center items-center h-screen">
       {buttons.map((btn) => (
         <NeuronButton
@@ -33,4 +38,4 @@ function Depression() {
        
     )
 }
-export default Depression
+export default Depression;
