@@ -1,31 +1,27 @@
 import { useState } from 'react'
 
-function NeuronButton({ src, alt, glowColor }) {
-  const [selected, setSelected] = useState(false)
-
+function NeuronButton({ src, alt, selected, onClick }) {
   return (
     <button
-      onClick={() => setSelected(!selected)}
+      onClick={onClick}
       className="relative flex items-center justify-center"
     >
-      {/* Glow-effekt bag billedet */}
-      {!selected && (
-        <span
-          className="absolute inset-0 rounded-full blur-xl animate-pulse -z-10"
-          style={{ backgroundColor: glowColor }}
-        />
-      )}
+      {/* Pulserende glow — farve skifter ved selected */}
+      <span
+        className={`
+          absolute inset-0 rounded-full blur-xl animate-pulse -z-10
+          ${selected ? 'bg-blue-400 scale-140' : 'bg-amber-400 scale-100'}
+        `}
+      />
 
-      {/* Selve billedet */}
+      {/* Billede — vokser ved selected, ingen ring */}
       <img
         src={src}
         alt={alt}
-        className={`
-          w-64 h-auto transition-all duration-300 cursor-pointer
-          ${selected
-            ? 'scale-125 ring-4 ring-white rounded-xl'
-            : 'scale-100'
-          }
+        width={270}
+        height={480}
+        className={`transition-all duration-300 cursor-pointer
+          ${selected ? 'scale-140' : 'scale-100'}
         `}
       />
     </button>
