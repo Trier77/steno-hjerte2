@@ -4,11 +4,24 @@ import HotspotButton from "../components/HotspotButton";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import VideoOverlay from "../components/VideoOverlay";
+import QuizOverlay from "../components/QuizOverlay";
 
 function StartSide() {
   const navigate = useNavigate();
   const [showVideo, setShowVideo] = useState(false);
   const [videoVisible, setVideoVisible] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizVisible, setQuizVisible] = useState(false);
+
+  const openQuiz = () => {
+    setShowQuiz(true);
+    setTimeout(() => setQuizVisible(true), 10);
+  };
+
+  const closeQuiz = () => {
+    setQuizVisible(false);
+    setTimeout(() => setShowQuiz(false), 400);
+  };
 
   const openVideo = () => {
     setShowVideo(true);
@@ -25,6 +38,7 @@ function StartSide() {
       {showVideo && (
         <VideoOverlay onClose={closeVideo} visible={videoVisible} />
       )}
+      {showQuiz && <QuizOverlay onClose={closeQuiz} visible={quizVisible} />}
       <section className="flex flex-col items-center">
         <h1 className="text-primary font-display text-center text-4xl font-semibold">
           Hjerteskærm
@@ -60,7 +74,7 @@ function StartSide() {
       </section>
       <section className="absolute left-0 top-82 flex flex-col gap-5 ml-10">
         <NavButton icon="play" label="Om Hjertet" onClick={openVideo} />
-        <NavButton icon="quiz" label="Quiz" onClick={() => {}} />
+        <NavButton icon="quiz" label="Quiz" onClick={openQuiz} />
       </section>
     </>
   );

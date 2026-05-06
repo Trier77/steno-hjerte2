@@ -38,6 +38,81 @@ const translations = {
         },
       ],
     },
+    quiz: {
+      title: "Quiz",
+      intro:
+        "Test din viden om hjertet og hjertesygdomme. Du vil blive stillet 10 spørgsmål, og efter hvert svar får du en forklaring. God fornøjelse!",
+      startBtn: "Start",
+      nextBtn: "Næste spørgsmål",
+      resultsTitle: "Resultat",
+      resultsText:
+        "Du svarede rigtigt på {score} ud af {total} spørgsmål. Du klarede dig bedre end {percentile}% af alle besøgende!",
+      playAgainBtn: "Prøv igen",
+      correctLabel: "Rigtigt!",
+      wrongLabel: "Forkert!",
+      questions: [
+        {
+          question: "[ Spørgsmål 1 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 2 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 3 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 4 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 5 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 6 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 7 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 8 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 9 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+        {
+          question: "[ Spørgsmål 10 fra museet ]",
+          options: ["[ Svar A ]", "[ Svar B ]", "[ Svar C ]", "[ Svar D ]"],
+          correct: 0,
+          explanation: "[ Forklaring fra museet ]",
+        },
+      ],
+    },
   },
   en: {
     rygning: {
@@ -47,13 +122,13 @@ const translations = {
         intro: "[ English text from museum ]",
         body: "[ English text from museum ]",
         stats: [
-          { value: "60%", description: "men smoked in 1950" },
-          { value: "10%", description: "women smoked in 1950" },
+          { value: "75%", description: "of men smoked in 1950" },
+          { value: "40%", description: "of women smoked in 1950" },
         ],
       },
       right: {
-        label: "Smoking today",
-        heading: "Smoking today",
+        label: "Smoking today and women's hearts",
+        heading: "Smoking today and women's hearts",
         intro: "[ English text from museum ]",
         body: "[ English text from museum ]",
         stats: [
@@ -65,19 +140,139 @@ const translations = {
     kraeftbehandling: {
       steps: [
         {
-          heading: "The heart was damaged",
-          body: "Treatment for breast cancer can make the heart sick. Both radiation and chemotherapy can damage the heart's healthy cells and increase the risk of heart disease later in life.",
+          heading: "Breast cancer and heart disease",
+          body: "[ English text from museum ]",
+          link: "Try to remove the tumor with radiation",
+        },
+        {
+          heading: "Radiation for breast cancer can damage the heart",
+          body: "[ English text from museum ]",
           link: null,
         },
+      ],
+    },
+    quiz: {
+      title: "Quiz",
+      intro:
+        "Test your knowledge about the heart and heart disease. You will be asked 10 questions, and after each answer you will get an explanation. Good luck!",
+      startBtn: "Start",
+      nextBtn: "Next question",
+      resultsTitle: "Results",
+      resultsText:
+        "You answered {score} out of {total} questions correctly. You did better than {percentile}% of all visitors!",
+      playAgainBtn: "Try again",
+      correctLabel: "Correct!",
+      wrongLabel: "Wrong!",
+      questions: [
         {
-          heading: "Breast cancer treatment",
-          body: "[ English text from museum ]",
-          link: "Try to remove the tumor",
+          question: "[ Question 1 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
         },
         {
-          heading: "Breast cancer treatment",
-          body: "[ English text from museum ]",
-          link: "Check up on the Heart",
+          question: "[ Question 2 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
+        },
+        {
+          question: "[ Question 3 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
+        },
+        {
+          question: "[ Question 4 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
+        },
+        {
+          question: "[ Question 5 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
+        },
+        {
+          question: "[ Question 6 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
+        },
+        {
+          question: "[ Question 7 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
+        },
+        {
+          question: "[ Question 8 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
+        },
+        {
+          question: "[ Question 9 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
+        },
+        {
+          question: "[ Question 10 from museum ]",
+          options: [
+            "[ Answer A ]",
+            "[ Answer B ]",
+            "[ Answer C ]",
+            "[ Answer D ]",
+          ],
+          correct: 0,
+          explanation: "[ Explanation from museum ]",
         },
       ],
     },
