@@ -6,6 +6,9 @@ import { useState } from "react";
 import VideoOverlay from "../components/VideoOverlay";
 import QuizOverlay from "../components/QuizOverlay";
 import FlagButton from "../components/FlagButton";
+import { useLanguage } from "../context/LanguageContext";
+import translations from "../translations";
+
 
 function StartSide() {
   const navigate = useNavigate();
@@ -13,6 +16,8 @@ function StartSide() {
   const [videoVisible, setVideoVisible] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizVisible, setQuizVisible] = useState(false);
+  const { language, visible } = useLanguage();
+  const t = translations[language];
 
   const openQuiz = () => {
     setShowQuiz(true);
@@ -42,10 +47,16 @@ function StartSide() {
       )}
       {showQuiz && <QuizOverlay onClose={closeQuiz} visible={quizVisible} />}
       <section className="flex flex-col items-center">
-        <h1 className="text-primary font-display text-center text-4xl font-semibold">
-          Hjerteskærm
+        <h1 key={language}
+          style={{ animation: "fadeIn 0.6s ease" }}
+          className="text-primary font-display text-center text-4xl font-semibold">
+          
+          {t.startside.heading} 
         </h1>
-        <p>undertitel</p>
+       
+        <p 
+        key={language + "-body"}
+        style={{ animation: "fadeIn 0.6s ease" }}>{t.startside.body}</p>
       </section>
       <section className="left-0 top-0 relative">
         <img src={krop} className="w-270 h-480" alt="" />
@@ -74,8 +85,8 @@ function StartSide() {
           onClick={() => navigate("/hormoner")}
         />
       </section>
-      <section className="absolute left-0 top-82 flex flex-col gap-5 ml-10">
-        <NavButton icon="play" label="Om Hjertet" onClick={openVideo} />
+      <section key={language + "-hjerteknap"} style={{ animation: "fadeIn 0.6s ease" }} className="absolute left-0 top-82 flex flex-col gap-5 ml-10">
+        <NavButton   icon="play" label={t.hjerteknap.heading} onClick={openVideo} />
         <NavButton icon="quiz" label="Quiz" onClick={openQuiz} />
       </section>
     </div>

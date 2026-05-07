@@ -38,6 +38,15 @@ const translations = {
         },
       ],
     },
+    startside: {     
+        
+          heading: "Det oversete hjerte",
+          body: "Tryk på kroppen og dyk ned i oversete sammenhænge mellem kroP, køn og hjerte-kar-sygdom",
+    },
+    hjerteknap: {     
+        
+          heading: "Om hjertet",
+    },
     quiz: {
       title: "Quiz",
       intro:
@@ -154,6 +163,15 @@ const translations = {
           link: null,
         },
       ],
+    },
+    startside: {     
+        
+          heading: "The overlooked Heart",
+          body: "Press on the body to dive into overlooked correlations between the body, gender and cardiovascular disease",
+    },
+    hjerteknap: {     
+        
+          heading: "About the Heart",
     },
     quiz: {
       title: "Quiz",
