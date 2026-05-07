@@ -164,7 +164,7 @@ function Depression() {
           </h2>
 
           {/* Illustration + text - always same layout */}
-          <div className="flex flex-row gap-4 flex-1">
+          <div className="flex flex-row gap-10 flex-1 pt-5">
             <div
               className="bg-white/60 rounded-2xl shrink-0"
               style={{ width: "42%", height: "300px" }}
