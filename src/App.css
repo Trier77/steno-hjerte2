@@ -4,14 +4,14 @@
   --color-primary: #39516f;
   --color-secondary: #e5e9ed;
   --color-bg: #faf5ed;
-  --color-overlay-light: #e5e9ed; /*Det er den samme som vores secondary-color men gjorde for sorterings  */
+  --color-overlay-light: #e5e9ed; /*Det er den samme som vores secondary-color men gjorde det for sorterings-mæssige grunde  */
   --color-overlay-dark: #472e30;
   --color-ui-box: #f1f1f1;
   --font-display: "Flama", sans-serif;
 }
 
 body {
-  background-color: var(--color-bg);
+  background-color: #800000; /*midlertidig baggrundsfarve som vi har sat ind på undersiderne, indtil vi havde de animerede baggrunde */
 }
 
 @font-face {

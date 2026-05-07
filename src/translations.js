@@ -46,10 +46,14 @@ const translations = {
       nextBtn: "Næste spørgsmål",
       resultsTitle: "Resultat",
       resultsText:
-        "Sådan, godt klaret! Du gjorde det bedre end {percentile} af alle vores besøgende!",
+        "Fedt, godt klaret! Du gjorde det bedre end {percentile} af alle vores besøgende!",
       playAgainBtn: "Prøv igen",
       correctLabel: "Rigtigt!",
       wrongLabel: "Forkert!",
+      quitTitle: "Er du sikker?",
+      quitBody: "Hvis du forlader quizzen nu, mister du al din fremgang.",
+      quitConfirm: "Forlad quiz",
+      quitCancel: "Fortsæt quiz",
       questions: [
         {
           question: "[ Spørgsmål 1 fra museet ]",
@@ -163,6 +167,10 @@ const translations = {
       playAgainBtn: "Try again",
       correctLabel: "Correct!",
       wrongLabel: "Wrong!",
+      quitTitle: "Are you sure?",
+      quitBody: "If you leave the quiz now, you will lose all your progress.",
+      quitConfirm: "Leave quiz",
+      quitCancel: "Continue quiz",
       questions: [
         {
           question: "[ Question 1 from museum ]",

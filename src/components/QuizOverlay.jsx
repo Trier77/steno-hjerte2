@@ -43,9 +43,36 @@ function QuizOverlay({ onClose, visible }) {
   const [showCorrect, setShowCorrect] = useState(false);
   const [score, setScore] = useState(0);
   const [percentile, setPercentile] = useState(50);
+  const [showQuitDialog, setShowQuitDialog] = useState(false);
+  const [quitVisible, setQuitVisible] = useState(false);
 
   const question = t.questions[currentQ];
   const isCorrect = selectedAnswer === question?.correct;
+
+  const isActiveQuiz =
+    screen === SCREEN_QUESTION || screen === SCREEN_EXPLANATION;
+
+  const handleCloseAttempt = () => {
+    if (isActiveQuiz) {
+      setShowQuitDialog(true);
+      setTimeout(() => setQuitVisible(true), 10);
+    } else {
+      onClose();
+    }
+  };
+
+  const handleConfirmQuit = () => {
+    setQuitVisible(false);
+    setTimeout(() => {
+      setShowQuitDialog(false);
+      onClose();
+    }, 300);
+  };
+
+  const handleCancelQuit = () => {
+    setQuitVisible(false);
+    setTimeout(() => setShowQuitDialog(false), 300);
+  };
 
   const transitionTo = (nextScreen) => {
     setFadeIn(false);
@@ -67,11 +94,7 @@ function QuizOverlay({ onClose, visible }) {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(index);
     if (index === question.correct) setScore((s) => s + 1);
-
-    // After 800ms show the correct answer highlighted
     setTimeout(() => setShowCorrect(true), 800);
-
-    // After 1600ms transition to explanation
     setTimeout(() => {
       setShowCorrect(false);
       transitionTo(SCREEN_EXPLANATION);
@@ -102,19 +125,13 @@ function QuizOverlay({ onClose, visible }) {
 
   const getOptionStyle = (index) => {
     if (selectedAnswer === null) return "bg-secondary text-primary";
-
-    // Show correct answer fully highlighted
-    if (showCorrect && index === question.correct) {
+    if (showCorrect && index === question.correct)
       return "bg-primary text-white";
-    }
-
-    // Selected answer - low opacity red or green
     if (index === selectedAnswer) {
       return index === question.correct
         ? "bg-green-400/50 text-primary"
         : "bg-red-400/50 text-primary";
     }
-
     return "bg-secondary text-primary opacity-40";
   };
 
@@ -125,7 +142,7 @@ function QuizOverlay({ onClose, visible }) {
         backgroundColor: `rgba(0,0,0,${visible ? 0.4 : 0})`,
         transition: "background-color 0.4s ease",
       }}
-      onClick={onClose}
+      onClick={handleCloseAttempt}
     >
       <div
         className="relative bg-ui-box rounded-3xl w-10/12 flex flex-col overflow-hidden"
@@ -139,7 +156,7 @@ function QuizOverlay({ onClose, visible }) {
       >
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleCloseAttempt}
           className="absolute top-0 right-0 z-10 w-20 h-20 flex items-center justify-center rounded-full bg-ui-box text-primary shadow"
         >
           <svg
@@ -157,6 +174,41 @@ function QuizOverlay({ onClose, visible }) {
             />
           </svg>
         </button>
+
+        {/* Quit confirmation dialog */}
+        {showQuitDialog && (
+          <div
+            className="absolute inset-0 z-20 flex items-center justify-center rounded-3xl"
+            style={{
+              backgroundColor: `rgba(0,0,0,${quitVisible ? 0.5 : 0})`,
+              opacity: quitVisible ? 1 : 0,
+              transition: "opacity 0.3s ease, background-color 0.3s ease",
+            }}
+          >
+            <div className="bg-ui-box rounded-3xl px-10 py-12 mx-8 flex flex-col items-center gap-8">
+              <h3 className="font-display font-semibold text-primary text-4xl text-center">
+                {t.quitTitle}
+              </h3>
+              <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
+                {t.quitBody}
+              </p>
+              <div className="flex flex-col gap-4 w-full">
+                <button
+                  onClick={handleConfirmQuit}
+                  className="w-full bg-primary text-white font-display font-semibold text-2xl rounded-full py-5"
+                >
+                  {t.quitConfirm}
+                </button>
+                <button
+                  onClick={handleCancelQuit}
+                  className="w-full bg-secondary text-primary font-display font-semibold text-2xl rounded-full py-5"
+                >
+                  {t.quitCancel}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Screen content with fade animation */}
         <div
@@ -188,14 +240,11 @@ function QuizOverlay({ onClose, visible }) {
           {/* QUESTION SCREEN */}
           {screen === SCREEN_QUESTION && (
             <div className="flex flex-col h-full px-10 py-12">
-              {/* Question */}
               <div className="flex-1 flex items-center justify-center">
                 <h2 className="font-display font-semibold text-primary text-4xl text-center leading-snug">
                   {question.question}
                 </h2>
               </div>
-
-              {/* Answer options */}
               <div className="flex flex-col gap-5 mb-6">
                 {question.options.map((option, i) => (
                   <button
@@ -207,8 +256,6 @@ function QuizOverlay({ onClose, visible }) {
                   </button>
                 ))}
               </div>
-
-              {/* Progress dots */}
               <div className="flex items-center justify-center gap-3 mb-4">
                 {t.questions.map((_, i) => (
                   <div
@@ -252,13 +299,9 @@ function QuizOverlay({ onClose, visible }) {
               <h2 className="font-display font-semibold text-primary text-5xl mt-8 text-center">
                 {t.resultsTitle}
               </h2>
-
               <div className="flex flex-col items-center gap-4">
                 <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
-                  {t.resultsText
-                    .split("{percentile}")[0]
-                    .replace("{score}", score)
-                    .replace("{total}", t.questions.length)}
+                  {t.resultsText.split("{percentile}")[0]}
                 </p>
                 <p className="font-display font-semibold text-primary text-8xl">
                   {percentile}%
@@ -267,7 +310,6 @@ function QuizOverlay({ onClose, visible }) {
                   {t.resultsText.split("{percentile}")[1]}
                 </p>
               </div>
-
               <button
                 onClick={handlePlayAgain}
                 className="bg-secondary text-primary font-display font-semibold text-3xl rounded-full px-16 py-5 mb-4"

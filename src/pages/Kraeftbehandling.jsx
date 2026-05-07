@@ -52,7 +52,7 @@ function Kraeftbehandling() {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-overlay-dark">
+    <div className="relative w-full h-screen overflow-hidden">
       <FlagButton />
       <BackButton />
 
