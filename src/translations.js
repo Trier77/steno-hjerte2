@@ -43,9 +43,28 @@ const translations = {
           heading: "Det oversete hjerte",
           body: "Tryk på kroppen og dyk ned i oversete sammenhænge mellem krop, køn og hjerte-kar-sygdom",
     },
-    hjerteknap: {     
-        
-          heading: "Om hjertet",
+    hjerteknap: {
+      heading: "Om hjertet",
+    },
+    depression: {
+      neurons: [
+        {
+          heading: "Depression og hjertet",
+          body: "Depression og andre psykiske forhold kan påvirke hjertet negativt. Forskere er først begyndt at undersøge sammenhængen mellem hjernen og hjerte-kar-sygdomme inden for de seneste 20-30 år.",
+        },
+        {
+          heading: "Depression rammer flest kvinder",
+          body: "Dobbelt så mange kvinder som mænd bliver ramt af depression i løbet af livet. Derfor er depression særligt en overset risiko for hjerte-kar-sygdom hos kvinder.",
+        },
+        {
+          heading: "Depression kan gøre hjertet sygt",
+          body: "Nyere forskning viser, at hvis man bliver ramt af depression, har man større risiko for at blive ramt af hjerte-kar-sygdom senere i livet.",
+        },
+        {
+          heading: "Hjertesygdomme bliver værre af depression",
+          body: "Hvis man i forvejen har en hjerte-kar-sygdom, og bliver ramt af depression, vil sygdommen blive værre hurtigere.",
+        },
+      ],
     },
     quiz: {
       title: "Quiz",
@@ -164,14 +183,32 @@ const translations = {
         },
       ],
     },
-    startside: {     
-        
-          heading: "The overlooked Heart",
-          body: "Press on the body to dive into overlooked correlations between the body, gender and cardiovascular disease",
+    startside: {
+      heading: "The overlooked Heart",
+      body: "Press on the body to dive into overlooked correlations between the body, gender and cardiovascular disease",
     },
-    hjerteknap: {     
-        
-          heading: "About the Heart",
+    hjerteknap: {
+      heading: "About the Heart",
+    },
+    depression: {
+      neurons: [
+        {
+          heading: "Depression and the heart",
+          body: "Depression and other mental conditions can affect the heart negatively. Researchers have only recently begun to investigate the connection between the brain and cardiovascular disease within the last 20-30 years.",
+        },
+        {
+          heading: "Depression affects more women",
+          body: "Twice as many women as men are affected by depression during their lifetime. Therefore, depression is particularly an overlooked risk factor for cardiovascular disease in women.",
+        },
+        {
+          heading: "Depression can make the heart sick",
+          body: "Newer research shows that if you are affected by depression, you have a greater risk of developing cardiovascular disease later in life.",
+        },
+        {
+          heading: "Heart disease gets worse with depression",
+          body: "If you already have cardiovascular disease and are affected by depression, the disease will get worse faster.",
+        },
+      ],
     },
     quiz: {
       title: "Quiz",
