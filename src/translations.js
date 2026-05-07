@@ -41,7 +41,7 @@ const translations = {
     startside: {     
         
           heading: "Det oversete hjerte",
-          body: "Tryk på kroppen og dyk ned i oversete sammenhænge mellem kroP, køn og hjerte-kar-sygdom",
+          body: "Tryk på kroppen og dyk ned i oversete sammenhænge mellem krop, køn og hjerte-kar-sygdom",
     },
     hjerteknap: {     
         
