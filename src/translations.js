@@ -87,6 +87,31 @@ const translations = {
         },
       ],
     },
+    hormoner: {
+      dragHint: "← Træk →",
+      stages: [
+        {
+          heading: "Hormoner og kvinders hjerter",
+          body: "Kønshormonet østrogen dannes i æggestokkene. Østrogen beskytter kvinders kroppe mod hjerte-kar-sygdom frem til overgangsalderen. Hvordan kvinders hormoner påvirker hjertet, er først for nylig begyndt at få mere opmærksomhed i forskning.\n\nTræk og undersøg, hvad der sker med kvinders blodkar, når de bliver ældre.",
+        },
+        {
+          heading: "Kvinder har meget østrogen i blodet",
+          body: "Kønshormonet østrogen beskytter hjertet mod forkalkning, stive blodkar og højt blodtryk frem til overgangsalderen.",
+        },
+        {
+          heading: "Mængden af østrogen falder drastisk",
+          body: "De fleste kvinder går i overgangsalderen, når de er mellem 45 og 55 år. Herefter falder mængden af østrogen, og risikoen for hjerte-kar-sygdomme begynder at stige kraftigt. Blodkarrene bliver stivere, og blodtrykket stiger.",
+        },
+        {
+          heading: "Kvinders blodtryk bliver højere end mænds",
+          body: "Omkring 60-65-årsalderen bliver kvinders blodtryk gennemsnitligt højere end mænds. Forhøjet blodtryk øger risikoen for hjerte-kar-sygdomme.",
+        },
+        {
+          heading: "Kvinder og mænds blodkar er lige syge",
+          body: "Omtrent 20 år efter, at en kvinde er gået i overgangsalderen, er deres risiko for hjerte-kar-sygdom den samme som mænds.",
+        },
+      ],
+    },
     quiz: {
       title: "Quiz",
       intro:
@@ -250,6 +275,31 @@ const translations = {
         {
           heading: "Women's hearts suffer more",
           body: "The risk increases a lot for both sexes with diabetes. Women's risk increases more than men's. Researchers are not sure what the reason is.",
+        },
+      ],
+    },
+    hormoner: {
+      dragHint: "← Drag →",
+      stages: [
+        {
+          heading: "Hormones and women's hearts",
+          body: "The sex hormone oestrogen is produced in the ovaries. Oestrogen protects women's bodies against cardiovascular disease until menopause. How women's hormones affect the heart has only recently begun to receive more attention in research.\n\nDrag and explore what happens to women's blood vessels as they get older.",
+        },
+        {
+          heading: "Women have a lot of oestrogen in the blood",
+          body: "The sex hormone oestrogen protects the heart against calcification, stiff blood vessels and high blood pressure until menopause.",
+        },
+        {
+          heading: "The amount of oestrogen drops drastically",
+          body: "Most women go through menopause between the ages of 45 and 55. After this, the amount of oestrogen falls, and the risk of cardiovascular disease begins to rise sharply. Blood vessels become stiffer and blood pressure rises.",
+        },
+        {
+          heading: "Women's blood pressure becomes higher than men's",
+          body: "Around the age of 60-65, women's blood pressure becomes on average higher than men's. High blood pressure increases the risk of cardiovascular disease.",
+        },
+        {
+          heading: "Women and men's blood vessels are equally unhealthy",
+          body: "Approximately 20 years after a woman has gone through menopause, their risk of cardiovascular disease is the same as men's.",
         },
       ],
     },
