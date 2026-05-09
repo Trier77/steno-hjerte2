@@ -1,4 +1,5 @@
 const translations = {
+  /* HER STÅR DE DANSKE TEKSTER TIL DIVERSE SIDER */
   da: {
     rygning: {
       left: {
@@ -38,10 +39,9 @@ const translations = {
         },
       ],
     },
-    startside: {     
-        
-          heading: "Det oversete hjerte",
-          body: "Tryk på kroppen og dyk ned i oversete sammenhænge mellem krop, køn og hjerte-kar-sygdom",
+    startside: {
+      heading: "Det oversete hjerte",
+      body: "Tryk på kroppen og dyk ned i oversete sammenhænge mellem krop, køn og hjerte-kar-sygdom",
     },
     hjerteknap: {
       heading: "Om hjertet",
@@ -63,6 +63,27 @@ const translations = {
         {
           heading: "Hjertesygdomme bliver værre af depression",
           body: "Hvis man i forvejen har en hjerte-kar-sygdom, og bliver ramt af depression, vil sygdommen blive værre hurtigere.",
+        },
+      ],
+    },
+    blodsukker: {
+      men: "Mænd",
+      women: "Kvinder",
+      sliderLow: "Normalt",
+      sliderHigh: "Diabetes",
+      stageLabels: ["Normalt blodsukker", "Forhøjet blodsukker", "Diabetes"],
+      steps: [
+        {
+          heading: "Diabetes og hjertet",
+          body: "Diabetes er en sygdom som gør, at man har for meget sukker i blodet. Sygdommen påvirker mænd og kvinders hjerter på forskellige måder.",
+        },
+        {
+          heading: "Risikoen stiger",
+          body: "Når blodsukkeret stiger, begynder risikoen for hjerte-kar-sygdom at stige for begge køn.",
+        },
+        {
+          heading: "Kvinders hjerter tager større skade",
+          body: "Begge køns risiko stiger meget ved diabetes. Kvinders risiko stiger mere end mænds. Forskere er ikke sikre på hvad årsagen er.",
         },
       ],
     },
@@ -146,6 +167,7 @@ const translations = {
       ],
     },
   },
+  /* HER STÅR DE ENGELSKE TEKSTER TIL DIVERSE SIDER */
   en: {
     rygning: {
       left: {
@@ -207,6 +229,27 @@ const translations = {
         {
           heading: "Heart disease gets worse with depression",
           body: "If you already have cardiovascular disease and are affected by depression, the disease will get worse faster.",
+        },
+      ],
+    },
+    blodsukker: {
+      men: "Men",
+      women: "Women",
+      sliderLow: "Normal",
+      sliderHigh: "Diabetes",
+      stageLabels: ["Normal blood sugar", "Elevated blood sugar", "Diabetes"],
+      steps: [
+        {
+          heading: "Diabetes and the heart",
+          body: "Diabetes is a disease that causes too much sugar in the blood. The disease affects men's and women's hearts in different ways.",
+        },
+        {
+          heading: "The risk increases",
+          body: "As blood sugar rises, the risk of cardiovascular disease starts to increase for both sexes.",
+        },
+        {
+          heading: "Women's hearts suffer more",
+          body: "The risk increases a lot for both sexes with diabetes. Women's risk increases more than men's. Researchers are not sure what the reason is.",
         },
       ],
     },
