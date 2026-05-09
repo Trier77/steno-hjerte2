@@ -116,6 +116,11 @@ const translations = {
         },
       ],
     },
+    graviditet: {
+      heading: "Graviditet",
+      body: "[ Tekst fra museet ]",
+      link: "Prøv at trække i speedometeret",
+    },
     quiz: {
       title: "Quiz",
       intro:
@@ -310,6 +315,11 @@ const translations = {
           body: "Men die seven years earlier than women from cardiovascular disease, because oestrogen protects women's hearts.\n\nNewer research shows that diseases in women's hormones such as endometriosis and PCOS can increase the risk of cardiovascular disease by up to 30%. More research is still needed in this area.",
         },
       ],
+    },
+    graviditet: {
+      heading: "Pregnancy",
+      body: "[ English text from museum ]",
+      link: "Try dragging the speedometer",
     },
     quiz: {
       title: "Quiz",
