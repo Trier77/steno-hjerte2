@@ -5,6 +5,7 @@ import BackButton from "../components/BackButton";
 import FlagButton from "../components/FlagButton";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
+import BrainBackground from "../components/Brainbackground";
 
 const NEURON_POSITIONS = [
   { top: "15%", left: "22%", rotation: -15 },
@@ -79,6 +80,7 @@ function Depression() {
     >
       <FlagButton />
       <BackButton />
+      <BrainBackground />
 
       {/* Animated background goes here later */}
 

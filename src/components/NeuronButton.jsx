@@ -1,31 +1,40 @@
 import { useEffect, useRef } from "react";
 
 function NeuronButton({ src, alt, selected, onClick, floatSeed = 0 }) {
-  const btnRef = useRef(null);
+  const divRef = useRef(null);
+  const targetScaleRef = useRef(1);
 
+  // Keep target scale in sync with selected prop
   useEffect(() => {
-    const el = btnRef.current;
+    targetScaleRef.current = selected ? 1.3 : 1;
+  }, [selected]);
+
+  // Single animation loop: float + smooth scale lerp, both on the same element
+  useEffect(() => {
+    const el = divRef.current;
     if (!el) return;
 
-    // Each neuron gets unique random movement values based on floatSeed
     const xRange = 8 + (floatSeed % 3) * 4;
     const yRange = 10 + (floatSeed % 4) * 4;
     const duration = 3000 + floatSeed * 400;
     const xOffset = (floatSeed % 5) * 0.4;
-
     let start = null;
+    let currentScale = targetScaleRef.current;
     let animFrame;
 
     const animate = (timestamp) => {
       if (!start) start = timestamp;
-      const elapsed = timestamp - start + floatSeed * 1200; // offset start point
+      const elapsed = timestamp - start + floatSeed * 1200;
 
       const x = Math.sin((elapsed / duration) * Math.PI * 2 + xOffset) * xRange;
       const y =
         Math.cos((elapsed / (duration * 1.3)) * Math.PI * 2 + floatSeed) *
         yRange;
 
-      el.style.transform = `translate(${x}px, ${y}px)`;
+      // Lerp toward target — 0.06 gives a ~400ms feel, smooth but responsive
+      currentScale += (targetScaleRef.current - currentScale) * 0.06;
+
+      el.style.transform = `translate(${x}px, ${y}px) scale(${currentScale})`;
       animFrame = requestAnimationFrame(animate);
     };
 
@@ -34,48 +43,26 @@ function NeuronButton({ src, alt, selected, onClick, floatSeed = 0 }) {
   }, [floatSeed]);
 
   return (
-    <div ref={btnRef} style={{ willChange: "transform" }}>
+    <div ref={divRef} className="will-change-transform">
       <button
         onClick={onClick}
-        className="relative flex items-center justify-center bg-transparent border-none cursor-pointer"
-        style={{
-          filter: selected
-            ? "drop-shadow(0 0 30px rgba(241,241,241,1)) drop-shadow(0 0 60px rgba(241,241,241,0.6))"
-            : "drop-shadow(0 0 8px rgba(241,241,241,0.3))",
-          opacity: selected ? 1 : undefined,
-          transform: selected ? "scale(1.3)" : "scale(1)",
-          transition:
-            "filter 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
-          animation: selected
-            ? "none"
-            : `neuronBreathe ${3.5 + floatSeed * 0.3}s ease-in-out infinite`,
-        }}
+        className={[
+          "relative flex items-center justify-center bg-transparent border-none cursor-pointer",
+          "transition-[filter] duration-500 ease-out",
+          selected
+            ? "drop-shadow-[0_0_30px_rgba(232,160,80,0.9)] drop-shadow-[0_0_60px_rgba(232,160,80,0.4)]"
+            : "drop-shadow-[0_0_8px_rgba(232,160,80,0.2)] animate-neuron-breathe",
+        ].join(" ")}
       >
         <img src={src} alt={alt} className="w-58 h-58 object-contain" />
 
-        {/* Tap hint ring - only on unselected */}
         {!selected && (
-          <span
-            className="absolute inset-0 rounded-full"
-            style={{
-              animation: `tapHint ${4 + floatSeed * 0.5}s ease-in-out infinite`,
-              border: "2px solid rgba(241,241,241,0.3)",
-              borderRadius: "50%",
-            }}
-          />
+          <>
+            <span className="absolute inset-0 rounded-full border border-[#e8a050]/50 animate-ripple" />
+            <span className="absolute inset-0 rounded-full border border-[#e8a050]/30 animate-ripple [animation-delay:0.8s]" />
+          </>
         )}
       </button>
-
-      <style>{`
-        @keyframes neuronBreathe {
-          0%, 100% { opacity: 0.45; }
-          50% { opacity: 0.65; }
-        }
-        @keyframes tapHint {
-          0%, 80%, 100% { transform: scale(1); opacity: 0.3; }
-          40% { transform: scale(1.15); opacity: 0.6; }
-        }
-      `}</style>
     </div>
   );
 }
