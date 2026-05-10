@@ -49,45 +49,52 @@ const labelArcD = (startDeg, endDeg) => {
 // --- Segment-definitioner ---
 // startDeg > endDeg (vi bevæger os venstre mod højre = faldende grader)
 // Tilpas label og route til dit projekt
-const SEGMENTS = [
-  {
-    id: 0,
-    startDeg: 180,
-    endDeg: 135,
-    label: "Graviditet",
-    route: "/graviditet",
-  },
-  {
-    id: 1,
-    startDeg: 135,
-    endDeg: 90,
-    label: "Graviditetsdiabetes",
-    route: "/graviditetsdiabetes",
-  },
-  {
-    id: 2,
-    startDeg: 90,
-    endDeg: 45,
-    label: "For tidlig fødsel",
-    route: "/foedsel",
-  },
-  {
-    id: 3,
-    startDeg: 45,
-    endDeg: 0,
-    label: "Svangerskabsforgiftning",
-    route: "/svangerskab",
-  },
-];
+// const SEGMENTS = [
+//   {
+//     id: 0,
+//     startDeg: 180,
+//     endDeg: 135,
+//     label: "Graviditet",
+//     route: "/graviditet",
+//   },
+//   {
+//     id: 1,
+//     startDeg: 135,
+//     endDeg: 90,
+//     label: "Graviditetsdiabetes",
+//     route: "/graviditetsdiabetes",
+//   },
+//   {
+//     id: 2,
+//     startDeg: 90,
+//     endDeg: 45,
+//     label: "For tidlig fødsel",
+//     route: "/foedsel",
+//   },
+//   {
+//     id: 3,
+//     startDeg: 45,
+//     endDeg: 0,
+//     label: "Svangerskabsforgiftning",
+//     route: "/svangerskab",
+//   },
+// ];
 
 // Flyt startpositionen til segment 0
 
 // --- Komponent ---
-function Speedometer({onSegmentChange}) {
+function Speedometer({onSegmentChange, labels =[]}) {
   const navigate = useNavigate();
   const [angle, setAngle] = useState(156); // Startposition (i segment 0)
   const svgRef = useRef(null);
   const isDragging = useRef(false);
+
+  const SEGMENTS = [
+    { id: 0, startDeg: 180, endDeg: 135, label: labels[0] ?? "Graviditet",              route: "/graviditet" },
+    { id: 1, startDeg: 135, endDeg: 90,  label: labels[1] ?? "Graviditetsdiabetes",     route: "/graviditetsdiabetes" },
+    { id: 2, startDeg: 90,  endDeg: 45,  label: labels[2] ?? "For tidlig fødsel",       route: "/foedsel" },
+    { id: 3, startDeg: 45,  endDeg: 0,   label: labels[3] ?? "Svangerskabsforgiftning", route: "/svangerskab" },
+  ];
   
   // Finder hvilket segment den blå cirkel er i (eller null)
   const activeSegment =

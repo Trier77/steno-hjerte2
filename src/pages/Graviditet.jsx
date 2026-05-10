@@ -29,7 +29,7 @@ function Graviditet() {
         style={{ bottom: "34.5vh" }}
       >
         <div style={{ width: "100%", maxWidth: "500px" }}>
-          <Speedometer onSegmentChange={handleSegmentChange} />
+          <Speedometer onSegmentChange={handleSegmentChange} labels={t.labels} />
         </div>
       </div>
 

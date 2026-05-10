@@ -117,6 +117,7 @@ const translations = {
       ],
     },
       graviditet: {
+        labels:["Graviditet", "Graviditetsdiabetes", "For tidlig fødsel", "Svangerskabsforgiftning"],
         steps: [
           {
             heading: "Graviditet og kvinders hjerter",
@@ -137,9 +138,7 @@ const translations = {
           },
         ],
       },
-      speedometeret:{
-        
-      },
+     
     quiz: {
       title: "Quiz",
       intro:
@@ -336,6 +335,7 @@ const translations = {
       ],
     },
     graviditet: {
+      labels:["Pregnancy", "Pregnancy diabetes", "Early births", "Svangerskabsforgiftning"],
       steps: [
         {
           heading: "Pregnancy and womens hearts",
