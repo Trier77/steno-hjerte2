@@ -4,7 +4,7 @@ import FlagButton from "../components/FlagButton";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 
-const SNAP_POINTS = ["?", "0-50", "50-60", "60-70", "70+"];
+const SNAP_POINTS = ["···", "0-50", "50-60", "60-70", "70+", "···"];
 
 export default function Hormoner() {
   const { language, visible } = useLanguage();
@@ -77,6 +77,7 @@ export default function Hormoner() {
 
   const handlePointTap = (index) => snapToIndex(index);
   const dotPercent = sliderX * 100;
+  const showIllustration = activeIndex !== 0 && activeIndex !== 5;
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col">
@@ -95,41 +96,43 @@ export default function Hormoner() {
           className="relative h-full"
           style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
         >
-          {/* Text area — sits at top, scrolls if needed */}
+          {/* Text area — sits at top */}
           <div
             className="absolute top-6 left-0 right-0"
             style={{
-              bottom: "160px", // leaves room for illustration + slider below
+              bottom: "160px",
               overflow: "hidden",
               opacity: contentVisible ? 1 : 0,
               transform: contentVisible ? "translateY(0)" : "translateY(10px)",
               transition: "opacity 0.3s ease, transform 0.3s ease",
             }}
           >
-            <h2 className="font-display font-semibold text-primary text-3xl mb-1 leading-snug">
+            <h2 className="font-display font-semibold text-primary text-5xl mb-1 leading-snug">
               {content.heading || "Hormoner og kvinders hjerter"}
             </h2>
-            <p className="font-display font-light text-primary text-2xl leading-snug">
+            <p className="font-display font-light text-primary text-3xl leading-snug">
               {content.body || "[ Tekst fra museet ]"}
             </p>
           </div>
 
-          {/* Blood vessel illustration — always at same fixed position */}
-          <div
-            className="absolute left-0 right-0 rounded-2xl flex items-center justify-center"
-            style={{
-              bottom: "300px",
-              height: "200px",
-              backgroundColor: "rgba(255,255,255,0.5)",
-            }}
-          >
-            <p className="font-display font-light text-primary opacity-40 text-base">
-              Animation tilføjes senere
-            </p>
-          </div>
+          {/* Blood vessel illustration — hidden on first and last slide */}
+          {showIllustration && (
+            <div
+              className="absolute left-0 right-0 rounded-2xl flex items-center justify-center"
+              style={{
+                bottom: "300px",
+                height: "200px",
+                backgroundColor: "rgba(255,255,255,0.5)",
+              }}
+            >
+              <p className="font-display font-light text-primary opacity-40 text-base">
+                Animation tilføjes senere
+              </p>
+            </div>
+          )}
 
           {/* Slider — always at same fixed position */}
-          <div className="absolute left-0 right-0" style={{ bottom: "100px" }}>
+          <div className="absolute left-0 right-0" style={{ bottom: "140px" }}>
             {/* Labels */}
             <div className="relative h-7 mb-7 m-2">
               {SNAP_POINTS.map((label, i) => (
@@ -181,7 +184,7 @@ export default function Hormoner() {
             </div>
 
             {/* Drag hint */}
-            <p className=" mt-5font-display font-semibold text-primary text-center text-3xl">
+            <p className="mt-5 font-display font-semibold text-primary text-center text-4xl">
               {t?.dragHint || "← Træk →"}
             </p>
           </div>

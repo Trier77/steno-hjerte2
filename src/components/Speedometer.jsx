@@ -3,13 +3,13 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 
 // --- Geometri-konstanter ---
-const CX = 300;          // Centrum X
-const CY = 295;          // Centrum Y (bunden af halvkreds)
+const CX = 300; // Centrum X
+const CY = 295; // Centrum Y (bunden af halvkreds)
 const SEG_OUTER_R = 275; // Ydre kant af røde segmenter
 const SEG_INNER_R = 177; // Indre kant af røde segmenter
 const TRACK_OUTER_R = 177; // Ydre kant af grå track
 const TRACK_INNER_R = 140; // Indre kant af grå track
-const DOT_R = 158;       // Radius hvor den blå cirkel kører
+const DOT_R = 158; // Radius hvor den blå cirkel kører
 
 // --- Hjælpefunktioner ---
 const toRad = (d) => (d * Math.PI) / 180;
@@ -50,18 +50,40 @@ const labelArcD = (startDeg, endDeg) => {
 // startDeg > endDeg (vi bevæger os venstre mod højre = faldende grader)
 // Tilpas label og route til dit projekt
 const SEGMENTS = [
-  { id: 0, startDeg: 180, endDeg: 135, label: "Graviditet",              route: "/graviditet" },
-  { id: 1, startDeg: 135, endDeg: 90,  label: "Graviditetsdiabetes",     route: "/graviditetsdiabetes" },
-  { id: 2, startDeg: 90,  endDeg: 45,  label: "For tidlig fødsel",       route: "/foedsel" },
-  { id: 3, startDeg: 45,  endDeg: 0,   label: "Svangerskabsforgiftning", route: "/svangerskab" },
+  {
+    id: 0,
+    startDeg: 180,
+    endDeg: 135,
+    label: "Graviditet",
+    route: "/graviditet",
+  },
+  {
+    id: 1,
+    startDeg: 135,
+    endDeg: 90,
+    label: "Graviditetsdiabetes",
+    route: "/graviditetsdiabetes",
+  },
+  {
+    id: 2,
+    startDeg: 90,
+    endDeg: 45,
+    label: "For tidlig fødsel",
+    route: "/foedsel",
+  },
+  {
+    id: 3,
+    startDeg: 45,
+    endDeg: 0,
+    label: "Svangerskabsforgiftning",
+    route: "/svangerskab",
+  },
 ];
 
 // Flyt startpositionen til segment 0
 
-
 // --- Komponent ---
-function Speedometer()
- {
+function Speedometer() {
   const navigate = useNavigate();
   const [angle, setAngle] = useState(156); // Startposition (i segment 0)
   const svgRef = useRef(null);
@@ -85,8 +107,8 @@ function Speedometer()
     return Math.max(6, Math.min(174, a));
 
     //Sørger for at vi ikke kan komme v<->h uden forbi 0 og 180 grader
-  //   setAngle(prev => Math.abs(clamped - prev) > 90 ? prev : clamped);
-  // return null;
+    //   setAngle(prev => Math.abs(clamped - prev) > 90 ? prev : clamped);
+    // return null;
   }, []);
 
   const handleMouseDown = (e) => {
@@ -137,15 +159,21 @@ function Speedometer()
         ))}
       </defs>
 
-            
-
-     {/* Grå track – 4 dele der matcher de røde segmenter */}
+      {/* Grå track – 4 dele der matcher de røde segmenter */}
       {SEGMENTS.map((seg) => (
         <path
           key={`track-${seg.id}`}
-          d={arcPath(CX, CY, TRACK_OUTER_R, TRACK_INNER_R, seg.startDeg, seg.endDeg)}
+          d={arcPath(
+            CX,
+            CY,
+            TRACK_OUTER_R,
+            TRACK_INNER_R,
+            seg.startDeg,
+            seg.endDeg,
+          )}
           fill="#c8cdd6"
-          stroke="white" strokeWidth={2}
+          stroke="white"
+          strokeWidth={2}
         />
       ))}
       
@@ -154,9 +182,17 @@ function Speedometer()
       {SEGMENTS.map((seg) => (
         <path
           key={seg.id}
-          d={arcPath(CX, CY, SEG_OUTER_R, SEG_INNER_R, seg.startDeg, seg.endDeg)}
+          d={arcPath(
+            CX,
+            CY,
+            SEG_OUTER_R,
+            SEG_INNER_R,
+            seg.startDeg,
+            seg.endDeg,
+          )}
           fill={activeSegment === seg.id ? "#f2efe0" : "#8b1e2d"}
-          stroke="white" strokeWidth={2}
+          stroke="white"
+          strokeWidth={2}
           style={{ transition: "fill 0.35s ease", cursor: "pointer" }}
           onClick={() => navigate(seg.route)}
         />
@@ -195,6 +231,6 @@ function Speedometer()
         onTouchStart={handleMouseDown}
       />
     </svg>
-    )
+  );
 }
-export default Speedometer
+export default Speedometer;

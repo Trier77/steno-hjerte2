@@ -110,6 +110,10 @@ const translations = {
           heading: "Kvinder og mænds blodkar er lige syge",
           body: "Omtrent 20 år efter, at en kvinde er gået i overgangsalderen, er deres risiko for hjerte-kar-sygdom den samme som mænds.",
         },
+        {
+          heading: "Den oversete sammenhæng: hormoner og hjertet",
+          body: "Mænd dør syv år tidligere end kvinder af hjerte-kar-sygdom, fordi østrogen beskytter kvinders hjerter.\n\nNyere forskning viser dog, at sygdomme i kvinders hormoner som for eksempel endometriose og PCOS kan øge risikoen for hjerte-kar-sygdom med op til 30 %. Der mangler stadig forskning på området.",
+        },
       ],
     },
     graviditet: {
@@ -320,6 +324,10 @@ const translations = {
         {
           heading: "Women and men's blood vessels are equally unhealthy",
           body: "Approximately 20 years after a woman has gone through menopause, their risk of cardiovascular disease is the same as men's.",
+        },
+        {
+          heading: "The overlooked connection: hormones and the heart",
+          body: "Men die seven years earlier than women from cardiovascular disease, because oestrogen protects women's hearts.\n\nNewer research shows that diseases in women's hormones such as endometriosis and PCOS can increase the risk of cardiovascular disease by up to 30%. More research is still needed in this area.",
         },
       ],
     },
