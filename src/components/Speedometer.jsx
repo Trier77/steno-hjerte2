@@ -103,7 +103,7 @@ function Speedometer({onSegmentChange, labels =[]}) {
   // Omregner museposition til vinkel i SVG-koordinater
   const getAngleFromEvent = useCallback((e) => {
     const svg = svgRef.current;
-    if (!svg) return null;
+    if (!svg) return;
     const rect = svg.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -111,11 +111,11 @@ function Speedometer({onSegmentChange, labels =[]}) {
     const svgY = ((clientY - rect.top) / rect.height) * 310;
     const a = Math.atan2(-(svgY - CY), svgX - CX) * (180 / Math.PI);
     // Klemmer til halvkredsens gyldige interval
-    return Math.max(6, Math.min(174, a));
+    const clamped = Math.max(6, Math.min(174, a));
 
     //Sørger for at vi ikke kan komme v<->h uden forbi 0 og 180 grader
-    //   setAngle(prev => Math.abs(clamped - prev) > 90 ? prev : clamped);
-    // return null;
+    setAngle(prev => Math.abs(clamped - prev) > 90 ? prev : clamped);
+  
   }, []);
 
   const handleMouseDown = (e) => {
@@ -130,8 +130,7 @@ function Speedometer({onSegmentChange, labels =[]}) {
   useEffect(() => {
       const onMove = (e) => {
       if (!isDragging.current) return;
-      const a = getAngleFromEvent(e);
-      if (a !== null) setAngle(a);
+      getAngleFromEvent(e);
     };
     const onUp = () => {
       isDragging.current = false;
