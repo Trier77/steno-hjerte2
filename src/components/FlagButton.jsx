@@ -12,7 +12,6 @@ function FlagButton() {
   const { language, switchLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
-
   const otherLang = language === "da" ? "en" : "da";
 
   const handleSwitch = (lang) => {
@@ -37,12 +36,12 @@ function FlagButton() {
   return (
     <div
       ref={ref}
-      className="fixed bottom-6 right-6 flex flex-col items-center gap-3 z-50"
+      className="fixed bottom-6 right-6 flex flex-row items-center gap-3 z-50"
     >
       <button
         onClick={() => handleSwitch(otherLang)}
         className={`w-14 h-14 rounded-full overflow-hidden border-2 border-primary shadow-lg transition-all duration-500 ease-in-out
-          ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-4 pointer-events-none"}`}
+          ${open ? "opacity-100 translate-x-0 pointer-events-auto" : "opacity-0 translate-x-4 pointer-events-none"}`}
       >
         <img
           src={flags[otherLang]}
@@ -50,7 +49,6 @@ function FlagButton() {
           className="w-full h-full object-cover"
         />
       </button>
-
       <button
         onClick={() => setOpen(!open)}
         className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary opacity-50 transition-opacity duration-500"

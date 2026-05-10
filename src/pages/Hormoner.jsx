@@ -5,7 +5,7 @@ import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 import BloodVesselAnimation from "../components/BloodVesselAnimation";
 
-const SNAP_POINTS = ["···", "0-50", "50-60", "60-70", "70+", "···"];
+const SNAP_POINTS = ["", "0-50", "50-60", "60-70", "70+", ""];
 
 export default function Hormoner() {
   const { language, visible } = useLanguage();
@@ -60,7 +60,17 @@ export default function Hormoner() {
     if (!isDragging) return;
     setIsDragging(false);
     const nearest = Math.round(sliderX * (SNAP_POINTS.length - 1));
-    snapToIndex(nearest);
+    if (activeIndex === 0 && nearest === 0 && sliderX > 0.02) {
+      snapToIndex(1);
+    } else if (
+      activeIndex === SNAP_POINTS.length - 1 &&
+      nearest === SNAP_POINTS.length - 1 &&
+      sliderX < 0.98
+    ) {
+      snapToIndex(SNAP_POINTS.length - 2);
+    } else {
+      snapToIndex(nearest);
+    }
   };
 
   useEffect(() => {
@@ -78,29 +88,30 @@ export default function Hormoner() {
 
   const handlePointTap = (index) => snapToIndex(index);
   const dotPercent = sliderX * 100;
-  const showIllustration = activeIndex !== 0 && activeIndex !== 5;
+  const isBookend = activeIndex === 0 || activeIndex === SNAP_POINTS.length - 1;
+  const showIllustration = !isBookend;
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col">
       <FlagButton />
       <BackButton />
 
-      {/* Background — animated background goes here later */}
       <div className="flex-1" />
 
-      {/* UI Infobox — flex column: text → animation → slider */}
+      {/* UI Infobox */}
       <div
         className="relative z-10 w-full bg-ui-box/70 rounded-t-4xl px-8 pt-6 pb-4 flex flex-col"
         style={{ height: "40vh" }}
       >
         <div
-          className="flex flex-col h-full justify-between"
+          className="flex flex-col h-full gap-10"
           style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
         >
           {/* 1. Text area */}
           <div
             className="shrink-0 overflow-hidden"
             style={{
+              height: "310px",
               opacity: contentVisible ? 1 : 0,
               transform: contentVisible ? "translateY(0)" : "translateY(10px)",
               transition: "opacity 0.3s ease, transform 0.3s ease",
@@ -114,48 +125,49 @@ export default function Hormoner() {
             </p>
           </div>
 
-          {/* 2. Blood vessel animation — only on age-range slides */}
-          {showIllustration && (
-            <div
-              className="shrink-0 rounded-2xl overflow-hidden"
-              style={{
-                height: "160px",
-                borderRadius: "16px",
-                overflow: "hidden",
-                background: "#1A0508",
-              }}
-            >
-              <BloodVesselAnimation activeIndex={activeIndex} />
-            </div>
-          )}
+          {/* 2. Blood vessel animation */}
+          <div
+            className="shrink-0 rounded-2xl overflow-hidden transition-opacity duration-300"
+            style={{
+              height: "160px",
+              background: "#1A0508",
+              opacity: showIllustration ? 1 : 0,
+            }}
+          >
+            <BloodVesselAnimation activeIndex={activeIndex} />
+          </div>
 
           {/* 3. Slider */}
           <div className="shrink-0">
             {/* Labels */}
-            <div className="relative h-7 mb-5 mx-2">
-              {SNAP_POINTS.map((label, i) => (
-                <button
-                  key={i}
-                  onClick={() => handlePointTap(i)}
-                  className="absolute font-display text-primary text-2xl transition-all duration-300 -translate-x-1/2"
-                  style={{
-                    left: `${(i / (SNAP_POINTS.length - 1)) * 100}%`,
-                    fontWeight: activeIndex === i ? "600" : "300",
-                    opacity: activeIndex === i ? 1 : 0.5,
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
+            <div className="relative h-7 mb-7">
+              {SNAP_POINTS.map((label, i) => {
+                if (!label) return null;
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handlePointTap(i)}
+                    className={`absolute font-display text-primary text-2xl transition-all duration-300 -translate-x-1/2 ${
+                      activeIndex === i
+                        ? "font-semibold opacity-100"
+                        : "font-normal opacity-75"
+                    }`}
+                    style={{ left: `${(i / (SNAP_POINTS.length - 1)) * 100}%` }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
 
             {/* Track */}
             <div
               ref={sliderRef}
-              className="relative w-full h-3 bg-primary/20 rounded-full cursor-pointer mb-2"
+              className="relative w-full h-3 bg-primary/20 rounded-full cursor-pointer mb-2 overflow-visible"
               onMouseDown={handlePointerDown}
               onTouchStart={handlePointerDown}
             >
+              {/* Fill */}
               <div
                 className="absolute left-0 top-0 h-full bg-primary rounded-full"
                 style={{
@@ -165,8 +177,10 @@ export default function Hormoner() {
                     : "none",
                 }}
               />
+
+              {/* Dot + pulsating ring */}
               <div
-                className="absolute top-1/2 rounded-full bg-primary shadow-lg cursor-grab active:cursor-grabbing"
+                className="absolute top-1/2"
                 style={{
                   left: `${dotPercent}%`,
                   transform: "translate(-50%, -50%)",
@@ -176,13 +190,20 @@ export default function Hormoner() {
                     ? "left 0.4s cubic-bezier(0.25, 1, 0.5, 1), width 0.2s ease, height 0.2s ease"
                     : "width 0.2s ease, height 0.2s ease",
                 }}
-                onMouseDown={handlePointerDown}
-                onTouchStart={handlePointerDown}
-              />
+              >
+                {isBookend && (
+                  <span className="absolute inset-0 rounded-full bg-primary opacity-40 animate-ping" />
+                )}
+                <div
+                  className="absolute inset-0 rounded-full bg-primary shadow-lg cursor-grab active:cursor-grabbing"
+                  onMouseDown={handlePointerDown}
+                  onTouchStart={handlePointerDown}
+                />
+              </div>
             </div>
 
             {/* Drag hint */}
-            <p className="mt-3 font-display font-semibold text-primary text-center text-4xl">
+            <p className="mt-5 font-display font-semibold text-primary text-center text-4xl">
               {t?.dragHint || "← Træk →"}
             </p>
           </div>
