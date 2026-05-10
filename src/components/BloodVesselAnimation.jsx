@@ -32,10 +32,8 @@ const STAGES = [
     speed: 0.65,
     elasticity: 0.25,
     plaques: [
-      // carried over from stage 1, slightly grown
       { pos: 0.25, size: 0.17, top: true },
       { pos: 0.72, size: 0.15, top: false },
-      // new in stage 2
       { pos: 0.42, size: 0.16, top: false },
       { pos: 0.88, size: 0.13, top: true },
     ],
@@ -44,12 +42,10 @@ const STAGES = [
     speed: 0.4,
     elasticity: 0.0,
     plaques: [
-      // carried over from stage 2, grown further
       { pos: 0.25, size: 0.2, top: true },
       { pos: 0.72, size: 0.19, top: false },
       { pos: 0.42, size: 0.2, top: false },
       { pos: 0.88, size: 0.17, top: true },
-      // new in stage 3
       { pos: 0.08, size: 0.18, top: false },
       { pos: 0.55, size: 0.19, top: true },
       { pos: 0.95, size: 0.16, top: false },
@@ -62,7 +58,6 @@ const ROW_VARIANCE = Array.from(
   (_, r) => 0.8 + Math.sin(r * 2.7) * 0.22,
 );
 
-// Build initial cell x positions — enough cells to always cover canvas + margins
 function initCells(W) {
   const count = Math.ceil((W + CELL_GAP * 4) / CELL_GAP) + 2;
   return Array.from({ length: MAX_ROWS }, (_, row) => {
@@ -114,7 +109,6 @@ function baseEdgeY(fx, H, side, t, elasticity) {
   );
 }
 
-// Very aggressive range: open water = 1.0, peak choke ≈ 0.03
 function speedAt(fx, H, plaques) {
   const choke = Math.min(
     0.97,
@@ -124,7 +118,7 @@ function speedAt(fx, H, plaques) {
   return Math.max(0.03, 1.0 - Math.pow(choke, 0.5) * 0.97);
 }
 
-function drawWalls(ctx, W, H, plaques, elasticity, t) {
+function drawWallFill(ctx, W, H, plaques, elasticity, t) {
   ["top", "bot"].forEach((side) => {
     const ce = side === "top" ? 0 : H;
     ctx.beginPath();
@@ -146,7 +140,11 @@ function drawWalls(ctx, W, H, plaques, elasticity, t) {
     ctx.globalAlpha = 0.55;
     ctx.fill();
     ctx.globalAlpha = 1;
+  });
+}
 
+function drawWallStroke(ctx, W, H, plaques, elasticity, t) {
+  ["top", "bot"].forEach((side) => {
     ctx.beginPath();
     for (let i = 0; i <= N_EDGE; i++) {
       const fx = i / N_EDGE;
@@ -201,7 +199,6 @@ function drawCells(ctx, W, H, plaques, elasticity, baseSpeed, cellsRef, t) {
   const flatBot = cy + lh;
   const N = 80;
 
-  // Clip to deformed lumen shape
   const topPts = [];
   const botPts = [];
   for (let i = 0; i <= N; i++) {
@@ -218,7 +215,6 @@ function drawCells(ctx, W, H, plaques, elasticity, baseSpeed, cellsRef, t) {
   ctx.closePath();
   ctx.clip();
 
-  // Blood channel background — distinct from cell color so cells are readable
   ctx.fillStyle = "#4A0A14";
   ctx.globalAlpha = 1;
   ctx.fillRect(0, 0, W, H);
@@ -237,11 +233,9 @@ function drawCells(ctx, W, H, plaques, elasticity, baseSpeed, cellsRef, t) {
     const xs = cellsRef.current[row];
 
     for (let i = 0; i < xs.length; i++) {
-      // Each cell advances by its own local speed this frame
       const fx = Math.max(0, Math.min(1, xs[i] / W));
       xs[i] += baseSpeed * ROW_VARIANCE[row] * speedAt(fx, H, plaques);
 
-      // When a cell exits the right edge, send it back behind the leftmost cell
       if (xs[i] > W + CELL_GAP) {
         let minX = xs[0];
         for (let j = 1; j < xs.length; j++) if (xs[j] < minX) minX = xs[j];
@@ -303,30 +297,25 @@ function drawFrame(
   const t = frameRef.current * 0.016;
   ctx.clearRect(0, 0, W, H);
 
-  // Dark solid background for the whole canvas — gives contrast to walls and cells
   ctx.fillStyle = "#7B1525";
   ctx.globalAlpha = 1;
   ctx.fillRect(0, 0, W, H);
   ctx.globalAlpha = 1;
 
-  drawWalls(ctx, W, H, plaques, elasticity, t);
+  drawWallFill(ctx, W, H, plaques, elasticity, t);
   drawPlaques(ctx, W, H, plaques, elasticity, t);
   drawCells(ctx, W, H, plaques, elasticity, baseSpeed, cellsRef, t);
+  drawWallStroke(ctx, W, H, plaques, elasticity, t);
 }
 
-// Linearly interpolate between two numbers
 function lerp(a, b, p) {
   return a + (b - a) * p;
 }
 
-// Ease in-out for a smoother feel
 function ease(p) {
   return p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
 }
 
-// Blend two stages together at progress 0→1.
-// Plaques are matched by pos+top identity — same plaque just lerps its size.
-// New plaques (only in `to`) grow in from 0; removed plaques shrink to 0.
 function blendStages(from, to, p) {
   const ep = ease(p);
   const elasticity = lerp(from.elasticity, to.elasticity, ep);
@@ -334,7 +323,6 @@ function blendStages(from, to, p) {
 
   const plaques = [];
 
-  // All plaques in `from` — lerp size toward matching `to` plaque, or shrink to 0
   from.plaques.forEach((fp) => {
     const match = to.plaques.find(
       (tp) => Math.abs(tp.pos - fp.pos) < 0.02 && tp.top === fp.top,
@@ -344,7 +332,6 @@ function blendStages(from, to, p) {
     if (size > 0.005) plaques.push({ ...fp, size });
   });
 
-  // Plaques only in `to` — grow in from 0
   to.plaques.forEach((tp) => {
     const alreadyIn = from.plaques.some(
       (fp) => Math.abs(fp.pos - tp.pos) < 0.02 && fp.top === tp.top,
@@ -366,7 +353,6 @@ export default function BloodVesselAnimation({ activeIndex }) {
   const frameRef = useRef(0);
   const cellsRef = useRef(null);
 
-  // Transition state — fromStage, toStage, progress (0→1), startTime
   const transRef = useRef({
     from: stageIdx,
     to: stageIdx,
@@ -376,14 +362,6 @@ export default function BloodVesselAnimation({ activeIndex }) {
 
   useEffect(() => {
     const tr = transRef.current;
-    // Start a new transition from wherever we currently are
-    const currentBlended =
-      tr.progress < 1
-        ? blendStages(STAGES[tr.from], STAGES[tr.to], tr.progress)
-        : STAGES[tr.to];
-
-    // Snap a virtual "from" stage using the current blended values
-    // so the transition always starts from the current visual state
     tr.from = tr.to;
     tr.to = stageIdx;
     tr.progress = 0;
@@ -416,7 +394,6 @@ export default function BloodVesselAnimation({ activeIndex }) {
 
       const tr = transRef.current;
 
-      // Advance transition progress
       if (tr.progress < 1) {
         if (tr.startTs === null) tr.startTs = ts;
         tr.progress = Math.min(1, (ts - tr.startTs) / TRANSITION_MS);
