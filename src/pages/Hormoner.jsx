@@ -3,6 +3,7 @@ import BackButton from "../components/BackButton";
 import FlagButton from "../components/FlagButton";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
+import BloodVesselAnimation from "../components/BloodVesselAnimation";
 
 const SNAP_POINTS = ["···", "0-50", "50-60", "60-70", "70+", "···"];
 
@@ -87,21 +88,19 @@ export default function Hormoner() {
       {/* Background — animated background goes here later */}
       <div className="flex-1" />
 
-      {/* UI Infobox */}
+      {/* UI Infobox — flex column: text → animation → slider */}
       <div
-        className="relative z-10 w-full bg-ui-box/70 rounded-t-4xl px-8"
+        className="relative z-10 w-full bg-ui-box/70 rounded-t-4xl px-8 pt-6 pb-4 flex flex-col"
         style={{ height: "40vh" }}
       >
         <div
-          className="relative h-full"
+          className="flex flex-col h-full justify-between"
           style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
         >
-          {/* Text area — sits at top */}
+          {/* 1. Text area */}
           <div
-            className="absolute top-6 left-0 right-0"
+            className="shrink-0 overflow-hidden"
             style={{
-              bottom: "160px",
-              overflow: "hidden",
               opacity: contentVisible ? 1 : 0,
               transform: contentVisible ? "translateY(0)" : "translateY(10px)",
               transition: "opacity 0.3s ease, transform 0.3s ease",
@@ -115,26 +114,25 @@ export default function Hormoner() {
             </p>
           </div>
 
-          {/* Blood vessel illustration — hidden on first and last slide */}
+          {/* 2. Blood vessel animation — only on age-range slides */}
           {showIllustration && (
             <div
-              className="absolute left-0 right-0 rounded-2xl flex items-center justify-center"
+              className="shrink-0 rounded-2xl overflow-hidden"
               style={{
-                bottom: "300px",
-                height: "200px",
-                backgroundColor: "rgba(255,255,255,0.5)",
+                height: "110px",
+                borderRadius: "16px",
+                overflow: "hidden",
+                background: "#1A0508",
               }}
             >
-              <p className="font-display font-light text-primary opacity-40 text-base">
-                Animation tilføjes senere
-              </p>
+              <BloodVesselAnimation activeIndex={activeIndex} />
             </div>
           )}
 
-          {/* Slider — always at same fixed position */}
-          <div className="absolute left-0 right-0" style={{ bottom: "140px" }}>
+          {/* 3. Slider */}
+          <div className="shrink-0">
             {/* Labels */}
-            <div className="relative h-7 mb-7 m-2">
+            <div className="relative h-7 mb-5 mx-2">
               {SNAP_POINTS.map((label, i) => (
                 <button
                   key={i}
@@ -184,7 +182,7 @@ export default function Hormoner() {
             </div>
 
             {/* Drag hint */}
-            <p className="mt-5 font-display font-semibold text-primary text-center text-4xl">
+            <p className="mt-3 font-display font-semibold text-primary text-center text-4xl">
               {t?.dragHint || "← Træk →"}
             </p>
           </div>
