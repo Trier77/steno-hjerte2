@@ -121,6 +121,7 @@ const translations = {
         {
           heading: "Graviditet og kvinders hjerter",
           body: "Hjerteforskning har historisk været fokuseret på mænd. Derfor er det først inden for de seneste 20-30 år, at forskere er begyndt at dykke ned i sammenhængen mellem kvinders graviditeter og hjerte-kar-sygodom senere i livet.\n\n9 ud",
+          link: "Prøv at trække i speedometeret",
         },
         {
           heading: "Diabetes under graviditet kan gøre hjertet sygt",
@@ -336,6 +337,7 @@ const translations = {
         {
           heading: "Pregnancy and womens hearts",
           body: "Hjerteforskning har historisk været fokuseret på mænd. Derfor er det først inden for de seneste 20-30 år, at forskere er begyndt at dykke ned i sammenhængen mellem kvinders graviditeter og hjerte-kar-sygodom senere i livet.\n\n9 ud",
+          link: "Try dragging the speedometer",
         },
         {
           heading: "Diabetes under pregnancy kan make the heart sick",
