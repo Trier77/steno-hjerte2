@@ -397,7 +397,7 @@ export default function BloodVesselAnimation({ activeIndex }) {
 
     function resize() {
       canvas.width = canvas.parentElement?.clientWidth || 300;
-      canvas.height = 110;
+      canvas.height = 160;
       cellsRef.current = initCells(canvas.width);
     }
     resize();
@@ -452,7 +452,7 @@ export default function BloodVesselAnimation({ activeIndex }) {
       ref={canvasRef}
       style={{
         width: "100%",
-        height: "110px",
+        height: "160px",
         borderRadius: "12px",
         display: "block",
       }}

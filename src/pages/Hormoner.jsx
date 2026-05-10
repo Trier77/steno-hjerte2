@@ -119,7 +119,7 @@ export default function Hormoner() {
             <div
               className="shrink-0 rounded-2xl overflow-hidden"
               style={{
-                height: "110px",
+                height: "160px",
                 borderRadius: "16px",
                 overflow: "hidden",
                 background: "#1A0508",
