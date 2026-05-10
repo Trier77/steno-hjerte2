@@ -83,12 +83,12 @@ const SEGMENTS = [
 // Flyt startpositionen til segment 0
 
 // --- Komponent ---
-function Speedometer() {
+function Speedometer({onSegmentChange}) {
   const navigate = useNavigate();
   const [angle, setAngle] = useState(156); // Startposition (i segment 0)
   const svgRef = useRef(null);
   const isDragging = useRef(false);
-
+  
   // Finder hvilket segment den blå cirkel er i (eller null)
   const activeSegment =
     SEGMENTS.find((s) => angle <= s.startDeg && angle >= s.endDeg)?.id ?? null;
@@ -116,8 +116,12 @@ function Speedometer() {
     isDragging.current = true;
   };
 
+  useEffect(()=> {
+     onSegmentChange?.(activeSegment);
+  },[activeSegment, onSegmentChange]);
+
   useEffect(() => {
-    const onMove = (e) => {
+      const onMove = (e) => {
       if (!isDragging.current) return;
       const a = getAngleFromEvent(e);
       if (a !== null) setAngle(a);
@@ -137,7 +141,7 @@ function Speedometer() {
       window.removeEventListener("touchmove", onMove);
       window.removeEventListener("touchend", onUp);
     };
-  }, [getAngleFromEvent]);
+  }, [getAngleFromEvent,]); 
 
   const dotPos = polarToCart(CX, CY, DOT_R, angle);
 

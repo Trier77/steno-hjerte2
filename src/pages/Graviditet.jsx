@@ -1,3 +1,4 @@
+import { useState, useCallback } from "react";
 import BackButton from "../components/BackButton";
 import FlagButton from "../components/FlagButton";
 import Speedometer from "../components/Speedometer";
@@ -7,22 +8,28 @@ import translations from "../translations";
 function Graviditet() {
   const { language, visible } = useLanguage();
   const t = translations[language]?.graviditet;
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const handleSegmentChange = useCallback((segmentId) => {
+    if (segmentId !== null) setCurrentStep(segmentId);
+  }, []);
+
+  const step = t.steps[currentStep];
 
   return (
     <div className="relative w-full h-screen overflow-hidden flex flex-col">
       <FlagButton />
       <BackButton />
 
-      {/* Background — image/animation goes here later */}
       <div className="flex-1" />
 
-      {/* Speedometer — sits above infobox, overlapping it */}
+      {/* Speedometer */}
       <div
         className="absolute left-0 right-0 z-20 flex justify-center"
         style={{ bottom: "34.5vh" }}
       >
         <div style={{ width: "100%", maxWidth: "500px" }}>
-          <Speedometer />
+          <Speedometer onSegmentChange={handleSegmentChange} />
         </div>
       </div>
 
@@ -32,17 +39,24 @@ function Graviditet() {
         style={{ height: "35vh" }}
       >
         <div
-          style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
+          key={currentStep}
+          style={{
+            opacity: visible ? 1 : 0,
+            transition: "opacity 0.3s ease",
+            animation: "fadeIn 0.6s ease",
+          }}
         >
           <h2 className="font-display font-semibold text-primary text-4xl mb-3 leading-snug">
-            {t?.heading || "Graviditet"}
+            {step.heading}
           </h2>
           <p className="font-display font-light text-primary text-2xl leading-relaxed mb-6">
-            {t?.body || "[ Tekst fra museet ]"}
+            {step.body}
           </p>
-          <button className="w-full text-center font-display font-semibold text-primary text-2xl underline">
-            {t?.link || "Prøv at trække i speedometeret"}
-          </button>
+          {step.link && (
+            <button className="w-full text-center font-display font-semibold text-primary text-2xl underline bg-transparent border-none cursor-pointer">
+              {step.link}
+            </button>
+          )}
         </div>
       </div>
     </div>
