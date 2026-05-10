@@ -176,28 +176,8 @@ function Speedometer() {
           strokeWidth={2}
         />
       ))}
-
-      {/* Koncentriske dekorationsringe i det indre område */}
-
-      {/* <circle cx={CX} cy={CY} r={275} fill="none" stroke="#9aa0b0" strokeWidth="2"   opacity="0.6" />
-      <circle cx={CX} cy={CY} r={177} fill="none" stroke="#9aa0b0" strokeWidth="1.5" opacity="0.4" />
-      <circle cx={CX} cy={CY} r={140} fill="none" stroke="#9aa0b0" strokeWidth="1"  opacity="0.3" /> */}
-
-      {/* Hvide skillelinjer ved gap-vinklerne */}
-      {/* {[134, 90, 46].map((deg) => {
-        const inner = polarToCart(CX, CY, TRACK_INNER_R, deg);
-        const outer = polarToCart(CX, CY, SEG_OUTER_R, deg);
-        return (
-          <line
-            key={deg}
-            x1={inner.x} y1={inner.y}
-            x2={outer.x} y2={outer.y}
-            stroke="white"
-            strokeWidth="3"
-          />
-        );
-      })} */}
-
+      
+      
       {/* Røde segmenter – skifter farve når cirklen er inden for */}
       {SEGMENTS.map((seg) => (
         <path
