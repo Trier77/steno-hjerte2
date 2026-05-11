@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router";
 
-function BackButton() {
+function BackButton({ onClick }) {
   const navigate = useNavigate();
 
   return (
     <button
-      onClick={() => navigate("/")}
+      onClick={onClick ?? (() => navigate("/"))}
       className="quarter-circle fixed top-0 left-0 z-50 w-36 h-36 flex items-start justify-start bg-secondary"
     >
       <svg

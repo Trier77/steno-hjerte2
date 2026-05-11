@@ -11,7 +11,7 @@
 }
 
 body {
-  background-color: #800000; /*midlertidig baggrundsfarve som vi har sat ind på undersiderne, indtil vi havde de animerede baggrunde */
+  background-color: #000000; /*midlertidig baggrundsfarve som vi har sat ind på undersiderne, indtil vi havde de animerede baggrunde */
 }
 
 @font-face {
@@ -226,6 +226,19 @@ body {
 }
 
 @keyframes sweepInward {
-  from { r: 275px; }
-  to   { r: 140px; }
+  from {
+    r: 275px;
+  }
+  to {
+    r: 140px;
+  }
+}
+
+/* Fade-in for subpages */
+.page-fade-in {
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.page-fade-in.visible {
+  opacity: 1;
 }

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import neuron from "../assets/neuron.svg";
 import NeuronButton from "../components/NeuronButton";
 import BackButton from "../components/BackButton";
@@ -6,6 +7,8 @@ import FlagButton from "../components/FlagButton";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 import BrainBackground from "../components/animated backgrounds/Brainbackground";
+import { useFadeIn } from "../hooks/useFadeIn";
+import { useFadeNavigate } from "../hooks/useFadeNavigate";
 
 const NEURON_POSITIONS = [
   { top: "15%", left: "22%", rotation: -15 },
@@ -14,7 +17,9 @@ const NEURON_POSITIONS = [
   { top: "44%", left: "74%", rotation: 10 },
 ];
 
-function Depression() {
+const PAGE_FADE_DURATION = 0.4;
+
+export default function Depression() {
   const { language, visible } = useLanguage();
   const t = translations[language].depression;
   const [selected, setSelected] = useState(0);
@@ -24,6 +29,9 @@ function Depression() {
   const containerRef = useRef(null);
   const [path, setPath] = useState("");
   const [svgSize, setSvgSize] = useState({ width: 0, height: 0 });
+  const [lineVisible, setLineVisible] = useState(false);
+  const fadeVisible = useFadeIn();
+  const { fadeNavigate, fading } = useFadeNavigate();
 
   const content = t?.neurons?.[selected];
 
@@ -35,6 +43,14 @@ function Depression() {
       setContentVisible(true);
     }, 300);
   };
+
+  useEffect(() => {
+    const t = setTimeout(
+      () => setLineVisible(true),
+      (PAGE_FADE_DURATION + 0.3 + 0 * 0.15 + 0.7) * 1000,
+    );
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const updatePath = () => {
@@ -76,10 +92,10 @@ function Depression() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-screen overflow-hidden"
+      className={`relative w-full h-screen overflow-hidden page-fade-in ${fadeVisible ? "visible" : ""}`}
     >
       <FlagButton />
-      <BackButton />
+      <BackButton onClick={() => fadeNavigate("/")} />
       <BrainBackground />
 
       {/* SVG signal line */}
@@ -88,7 +104,11 @@ function Depression() {
           className="absolute inset-0 pointer-events-none z-10"
           width={svgSize.width}
           height={svgSize.height}
-          style={{ overflow: "visible" }}
+          style={{
+            overflow: "visible",
+            opacity: lineVisible ? 1 : 0,
+            transition: "opacity 0.6s ease",
+          }}
         >
           <path
             d={path}
@@ -124,31 +144,43 @@ function Depression() {
 
       {/* Neurons */}
       {NEURON_POSITIONS.map((pos, i) => (
-        <div
+        <motion.div
           key={i}
           ref={(el) => (neuronRefs.current[i] = el)}
           className="absolute z-20"
-          style={{
-            top: pos.top,
-            left: pos.left,
-            transform: `translate(-50%, -50%) rotate(${pos.rotation}deg)`,
+          style={{ top: pos.top, left: pos.left }}
+          initial={{ opacity: 0, scale: 0.6, x: "-50%", y: "-50%" }}
+          animate={{ opacity: 1, scale: 1, x: "-50%", y: "-50%" }}
+          transition={{
+            duration: 0.7,
+            delay: PAGE_FADE_DURATION + 0.3 + i * 0.15,
+            ease: [0.34, 1.56, 0.64, 1],
           }}
         >
-          <NeuronButton
-            src={neuron}
-            alt={`Neuron ${i + 1}`}
-            selected={selected === i}
-            onClick={() => handleSelect(i)}
-            floatSeed={i * 7 + 3}
-          />
-        </div>
+          <div style={{ transform: `rotate(${pos.rotation}deg)` }}>
+            <NeuronButton
+              src={neuron}
+              alt={`Neuron ${i + 1}`}
+              selected={selected === i}
+              onClick={() => handleSelect(i)}
+              floatSeed={i * 7 + 3}
+            />
+          </div>
+        </motion.div>
       ))}
 
-      {/* UI Info box */}
-      <section
+      {/* UI box */}
+      <motion.section
         ref={boxRef}
         className="absolute w-screen bg-ui-box/70 bottom-0 rounded-t-4xl z-20 px-8 pt-6 pb-8"
         style={{ height: "25vh" }}
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        transition={{
+          duration: 0.6,
+          delay: PAGE_FADE_DURATION + 0.3 + 4 * 0.15 + 0.3,
+          ease: [0.4, 0, 0.2, 1],
+        }}
       >
         <div
           className="flex flex-col h-full"
@@ -158,12 +190,9 @@ function Depression() {
             transition: "opacity 0.3s ease, transform 0.3s ease",
           }}
         >
-          {/* Heading - always same size */}
           <h2 className="font-display font-semibold text-primary text-5xl text-center mb-3 leading-snug">
             {content?.heading || "[ Tekst fra museet ]"}
           </h2>
-
-          {/* Illustration + text - always same layout */}
           <div className="flex flex-row gap-10 flex-1 pt-5">
             <div
               className="bg-white/60 rounded-2xl shrink-0"
@@ -177,9 +206,20 @@ function Depression() {
             </p>
           </div>
         </div>
-      </section>
+      </motion.section>
+
+      {/* Fade to black on back navigation */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 999,
+          background: "#000",
+          opacity: fading ? 1 : 0,
+          transition: "opacity 0.7s ease",
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }
-
-export default Depression;
