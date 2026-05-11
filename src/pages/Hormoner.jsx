@@ -4,6 +4,7 @@ import FlagButton from "../components/FlagButton";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 import BloodVesselAnimation from "../components/BloodVesselAnimation";
+import OvariesBackground from "../components/animated backgrounds/Ovariesbackground";
 
 const SNAP_POINTS = ["", "0-50", "50-60", "60-70", "70+", ""];
 
@@ -74,15 +75,23 @@ export default function Hormoner() {
   };
 
   useEffect(() => {
+    const track = sliderRef.current;
+
     window.addEventListener("mousemove", handlePointerMove);
     window.addEventListener("mouseup", handlePointerUp);
     window.addEventListener("touchmove", handlePointerMove, { passive: false });
     window.addEventListener("touchend", handlePointerUp);
+    // touchstart needs passive: false so preventDefault works
+    track?.addEventListener("touchstart", handlePointerDown, {
+      passive: false,
+    });
+
     return () => {
       window.removeEventListener("mousemove", handlePointerMove);
       window.removeEventListener("mouseup", handlePointerUp);
       window.removeEventListener("touchmove", handlePointerMove);
       window.removeEventListener("touchend", handlePointerUp);
+      track?.removeEventListener("touchstart", handlePointerDown);
     };
   }, [isDragging, sliderX]);
 
@@ -95,6 +104,7 @@ export default function Hormoner() {
     <div className="relative w-full h-screen overflow-hidden flex flex-col">
       <FlagButton />
       <BackButton />
+      <OvariesBackground />
 
       <div className="flex-1" />
 
@@ -165,7 +175,6 @@ export default function Hormoner() {
               ref={sliderRef}
               className="relative w-full h-3 bg-primary/20 rounded-full cursor-pointer mb-2 overflow-visible"
               onMouseDown={handlePointerDown}
-              onTouchStart={handlePointerDown}
             >
               {/* Fill */}
               <div
@@ -197,7 +206,6 @@ export default function Hormoner() {
                 <div
                   className="absolute inset-0 rounded-full bg-primary shadow-lg cursor-grab active:cursor-grabbing"
                   onMouseDown={handlePointerDown}
-                  onTouchStart={handlePointerDown}
                 />
               </div>
             </div>

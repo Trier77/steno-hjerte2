@@ -3,9 +3,11 @@ import FlagButton from "../components/FlagButton";
 import BackButton from "../components/BackButton";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
+import LungsBackground from "../components/animated backgrounds/Lungsbackground";
 
 export default function Rygning() {
   const containerRef = useRef(null);
+  const handleRef = useRef(null);
   const { language, visible } = useLanguage();
   const SIDES = translations[language].rygning;
   const [sliderX, setSliderX] = useState(0.5);
@@ -19,7 +21,7 @@ export default function Rygning() {
   const getClientX = (e) => (e.touches ? e.touches[0].clientX : e.clientX);
 
   const handlePointerDown = (e) => {
-    e.preventDefault();
+    if (e.touches) e.preventDefault();
     setIsDragging(true);
     startXRef.current = getClientX(e);
     startSliderRef.current = sliderX;
@@ -51,6 +53,7 @@ export default function Rygning() {
     setTimeout(() => setIsSnapping(false), 400);
   };
 
+  // Global mouse/touch move and up listeners
   useEffect(() => {
     window.addEventListener("mousemove", handlePointerMove);
     window.addEventListener("mouseup", handlePointerUp);
@@ -63,6 +66,14 @@ export default function Rygning() {
       window.removeEventListener("touchend", handlePointerUp);
     };
   }, [isDragging, sliderX]);
+
+  // Touch start on the handle — needs passive: false to allow preventDefault
+  useEffect(() => {
+    const el = handleRef.current;
+    if (!el) return;
+    el.addEventListener("touchstart", handlePointerDown, { passive: false });
+    return () => el.removeEventListener("touchstart", handlePointerDown);
+  }, [sliderX]);
 
   const sliderPercent = `${sliderX * 100}%`;
   const transition = isSnapping
@@ -77,13 +88,20 @@ export default function Rygning() {
     >
       <FlagButton />
       <BackButton />
+      <LungsBackground />
 
-      {/* Left background */}
-      <div className="absolute inset-0 bg-overlay-light opacity-50" />
-
-      {/* Right background */}
+      {/* Left overlay */}
       <div
-        className="absolute inset-0 bg-overlay-dark opacity-50"
+        className="absolute inset-0 bg-overlay-light opacity-30"
+        style={{
+          clipPath: `inset(0 ${100 - sliderX * 100}% 0 0)`,
+          transition,
+        }}
+      />
+
+      {/* Right overlay */}
+      <div
+        className="absolute inset-0 bg-overlay-dark opacity-30"
         style={{
           clipPath: `inset(0 0 0 ${sliderPercent})`,
           transition,
@@ -104,9 +122,9 @@ export default function Rygning() {
       >
         <div className="w-2 flex-1 bg-ui-box" />
         <div
+          ref={handleRef}
           className="w-24 h-24 rounded-full bg-ui-box flex items-center justify-center shadow-xl cursor-grab active:cursor-grabbing shrink-0"
           onMouseDown={handlePointerDown}
-          onTouchStart={handlePointerDown}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
