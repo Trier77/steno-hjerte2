@@ -8,6 +8,7 @@ import QuizOverlay from "../components/QuizOverlay";
 import FlagButton from "../components/FlagButton";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
+import { useFadeIn } from "../hooks/useFadeIn";
 
 export default function StartSide() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function StartSide() {
   const { language } = useLanguage();
   const t = translations[language];
   const [fading, setFading] = useState(false);
+  const fadeVisible = useFadeIn();
 
   const openQuiz = () => {
     setShowQuiz(true);
@@ -46,7 +48,9 @@ export default function StartSide() {
   );
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div
+      className={`min-h-screen bg-bg page-fade-in ${fadeVisible ? "visible" : ""}`}
+    >
       <section className="left-0 top-0 relative">
         <img
           src={krop}

@@ -17,7 +17,7 @@ const NEURON_POSITIONS = [
   { top: "44%", left: "74%", rotation: 10 },
 ];
 
-const PAGE_FADE_DURATION = 0.4;
+const PAGE_FADE_DURATION = 0.1;
 
 export default function Depression() {
   const { language, visible } = useLanguage();
@@ -45,9 +45,13 @@ export default function Depression() {
   };
 
   useEffect(() => {
+    const uiBoxDelay = PAGE_FADE_DURATION + 0.3 + 2 * 0.15;
+    const uiBoxDuration = 0.6;
+    const buffer = 0.15;
+
     const t = setTimeout(
       () => setLineVisible(true),
-      (PAGE_FADE_DURATION + 0.3 + 0 * 0.15 + 0.7) * 1000,
+      (uiBoxDelay + uiBoxDuration + buffer) * 800,
     );
     return () => clearTimeout(t);
   }, []);
@@ -178,7 +182,7 @@ export default function Depression() {
         animate={{ y: 0 }}
         transition={{
           duration: 0.6,
-          delay: PAGE_FADE_DURATION + 0.3 + 4 * 0.15 + 0.3,
+          delay: PAGE_FADE_DURATION + 0.3 + 2 * 0.15,
           ease: [0.4, 0, 0.2, 1],
         }}
       >
