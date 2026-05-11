@@ -132,6 +132,23 @@ function Speedometer({onSegmentChange, labels =[]}) {
             d={labelArcD(seg.startDeg, seg.endDeg)}
           />
         ))}
+        {SEGMENTS.map((seg) => (
+          <mask key={`mask-${seg.id}`} id={`sweep-${seg.id}`}>
+            <rect width="600" height="310" fill="black" />
+            {/* Hvid = synlig — definerer segmentets form */}
+            <path d={arcPath(CX, CY, SEG_OUTER_R, SEG_INNER_R, seg.startDeg, seg.endDeg)} fill="white" />
+            {/* Sort cirkel krymper fra ydre til indre → afslører farven udefra og ind */}
+            <circle
+              key={activeSegment === seg.id ? "on" : "off"}
+              cx={CX} cy={CY} fill="black"
+              r={activeSegment === seg.id ? TRACK_INNER_R : SEG_OUTER_R}
+              style={activeSegment === seg.id
+                ? { animation: "sweepInward 0.5s ease forwards" }
+                : {}
+              }
+            />
+          </mask>
+        ))}
         <filter id="round-corners">
         <feGaussianBlur stdDeviation="6" result="blur"/>
         <feColorMatrix in="blur" type="matrix"
@@ -141,7 +158,7 @@ function Speedometer({onSegmentChange, labels =[]}) {
         </filter>
       </defs>
 
-      {/* Grå track – 4 dele der matcher de røde segmenter */}
+      {/* Slider felter */}
       <g filter="url(#round-corners)">
 {SEGMENTS.map((seg) => (
         <path
@@ -154,7 +171,7 @@ function Speedometer({onSegmentChange, labels =[]}) {
             seg.startDeg,
             seg.endDeg,
           )}
-          fill="#c8cdd6"
+          fill="#c1cddb"
           // stroke="white"
           // strokeWidth={2}
            filter="url(#round-corners)"
@@ -162,7 +179,7 @@ function Speedometer({onSegmentChange, labels =[]}) {
       ))}
       
       
-      {/* Røde segmenter – skifter farve når cirklen er inden for */}
+      {/* Emne felter – skifter farve når cirklen er inden for */}
       {SEGMENTS.map((seg) => (
         <path
           key={seg.id}
@@ -174,12 +191,22 @@ function Speedometer({onSegmentChange, labels =[]}) {
             seg.startDeg,
             seg.endDeg,
           )}
-          fill={activeSegment === seg.id ? "#f2efe0" : "#8b1e2d"}
+          fill={activeSegment === seg.id ? "var(--color-secondary)" : "#c1cddb"}
           // stroke="white"
           // strokeWidth={2}
            filter="url(#round-corners)"
           style={{ transition: "fill 0.35s ease" }}
           
+        />
+      ))}
+      {/* Farvede overlays med sweep-animation */}
+      {SEGMENTS.map((seg) => (
+        <path
+          key={`overlay-${seg.id}`}
+          d={arcPath(CX, CY, SEG_OUTER_R, SEG_INNER_R, seg.startDeg, seg.endDeg)}
+          fill="var(--color-secondary)"
+          mask={`url(#sweep-${seg.id})`}
+          style={{ pointerEvents: "none" }}
         />
       ))}
 
@@ -222,7 +249,7 @@ function Speedometer({onSegmentChange, labels =[]}) {
           fontSize="11"
           fontWeight="600"
           fontFamily="sans-serif"
-          fill={activeSegment === seg.id ? "#6b1020" : "#f5ede8"}
+          fill={activeSegment === seg.id ? "var(--color-primary)" : "#f5ede8"}
           style={{ transition: "fill 0.35s ease", pointerEvents: "none" }}
         >
           <textPath

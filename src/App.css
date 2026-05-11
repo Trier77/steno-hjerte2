@@ -224,3 +224,8 @@ body {
 .animate-breathe {
   animation: breathe 5s ease-in-out infinite;
 }
+
+@keyframes sweepInward {
+  from { r: 275px; }
+  to   { r: 140px; }
+}
