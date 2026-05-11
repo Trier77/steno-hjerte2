@@ -49,8 +49,7 @@ body {
   }
 }
 
-/* Brain background for Depression.jsx*/
-/* Paste into App.css */
+/* Animated Backgrounds*/
 
 @keyframes heartbeat {
   0%,
@@ -151,4 +150,77 @@ body {
 }
 .animate-ripple {
   animation: ripple 2s ease-out infinite;
+}
+
+/* Ovaries background — slow fluid wash layers */
+@keyframes wash-a {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(18px, -12px) scale(1.04);
+  }
+  66% {
+    transform: translate(-10px, 16px) scale(0.97);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+@keyframes wash-b {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  40% {
+    transform: translate(-14px, 10px) scale(1.05);
+  }
+  75% {
+    transform: translate(12px, -8px) scale(0.98);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+@keyframes wash-c {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  30% {
+    transform: translate(10px, 14px) scale(1.03);
+  }
+  65% {
+    transform: translate(-16px, -6px) scale(0.96);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-wash-a {
+  animation: wash-a 5s ease-in-out infinite;
+}
+.animate-wash-b {
+  animation: wash-b 9s ease-in-out infinite;
+}
+.animate-wash-c {
+  animation: wash-c 7s ease-in-out infinite;
+}
+
+/* Lungs background — slow breathing expansion */
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+.animate-breathe {
+  animation: breathe 5s ease-in-out infinite;
 }
