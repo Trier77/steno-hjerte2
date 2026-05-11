@@ -24,18 +24,18 @@ function Graviditet() {
       <div className="flex-1" />
 
       {/* Speedometer */}
-      <div
+      {/* <div
         className="absolute left-0 right-0 z-20 flex justify-center"
         style={{ bottom: "34.5vh" }}
       >
         <div style={{ width: "100%", maxWidth: "500px" }}>
           <Speedometer onSegmentChange={handleSegmentChange} labels={t.labels} />
         </div>
-      </div>
+      </div> */}
 
       {/* UI Infobox */}
       <div
-        className="relative z-10 w-full bg-ui-box/70 rounded-t-4xl px-8 pt-8 pb-8"
+        className="relative z-10 w-full bg-ui-box/70 rounded-t-4xl px-8 pt-8 pb-8 flex flex-col"
         style={{ height: "35vh" }}
       >
         <div
@@ -58,6 +58,10 @@ function Graviditet() {
             </button>
           )}
         </div>
+        <div className="absolute bottom-0 left-0 right-0" style={{ transformOrigin: "bottom center", transform: "scale(0.75)" }}>
+          <Speedometer onSegmentChange={handleSegmentChange} labels={t.labels} />
+        </div>
+         
       </div>
     </div>
   );
