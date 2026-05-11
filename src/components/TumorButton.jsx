@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const HOLD_DURATION = 2000;
 
@@ -8,6 +8,7 @@ function TumorButton({ onComplete, onHoldStart }) {
   const [done, setDone] = useState(false);
   const intervalRef = useRef(null);
   const startTimeRef = useRef(null);
+  const buttonRef = useRef(null);
 
   const startHold = (e) => {
     e.preventDefault();
@@ -15,12 +16,10 @@ function TumorButton({ onComplete, onHoldStart }) {
     setHolding(true);
     if (onHoldStart) onHoldStart();
     startTimeRef.current = Date.now();
-
     intervalRef.current = setInterval(() => {
       const elapsed = Date.now() - startTimeRef.current;
       const newProgress = Math.min(elapsed / HOLD_DURATION, 1);
       setProgress(newProgress);
-
       if (newProgress >= 1) {
         clearInterval(intervalRef.current);
         setDone(true);
@@ -36,6 +35,18 @@ function TumorButton({ onComplete, onHoldStart }) {
     setHolding(false);
     setProgress(0);
   };
+
+  // Attach touchstart manually with passive: false so preventDefault works
+  useEffect(() => {
+    const el = buttonRef.current;
+    if (!el) return;
+    el.addEventListener("touchstart", startHold, { passive: false });
+    el.addEventListener("touchend", stopHold);
+    return () => {
+      el.removeEventListener("touchstart", startHold);
+      el.removeEventListener("touchend", stopHold);
+    };
+  }, [done]);
 
   const size = 140;
   const strokeWidth = 8;
@@ -79,11 +90,10 @@ function TumorButton({ onComplete, onHoldStart }) {
 
       {/* Inner circle */}
       <button
+        ref={buttonRef}
         onMouseDown={startHold}
         onMouseUp={stopHold}
         onMouseLeave={stopHold}
-        onTouchStart={startHold}
-        onTouchEnd={stopHold}
         className={`relative w-24 h-24 rounded-full bg-primary block cursor-pointer border-none transition-transform duration-200 ${
           holding ? "scale-90" : "scale-100"
         } ${done ? "opacity-0" : "opacity-100"}`}
