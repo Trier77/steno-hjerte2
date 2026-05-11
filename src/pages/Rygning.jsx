@@ -1,9 +1,14 @@
 import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import FlagButton from "../components/FlagButton";
 import BackButton from "../components/BackButton";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 import LungsBackground from "../components/animated backgrounds/Lungsbackground";
+import { useFadeIn } from "../hooks/useFadeIn";
+import { useFadeNavigate } from "../hooks/useFadeNavigate";
+
+const PAGE_FADE_DURATION = 0.4;
 
 export default function Rygning() {
   const containerRef = useRef(null);
@@ -15,6 +20,8 @@ export default function Rygning() {
   const [isSnapping, setIsSnapping] = useState(false);
   const startXRef = useRef(null);
   const startSliderRef = useRef(null);
+  const fadeVisible = useFadeIn();
+  const { fadeNavigate, fading } = useFadeNavigate();
 
   const activeSide = sliderX <= 0 ? "left" : sliderX >= 1 ? "right" : null;
 
@@ -43,17 +50,12 @@ export default function Rygning() {
     if (!isDragging) return;
     setIsDragging(false);
     setIsSnapping(true);
-    if (sliderX < 0.25) {
-      setSliderX(0);
-    } else if (sliderX > 0.75) {
-      setSliderX(1);
-    } else {
-      setSliderX(0.5);
-    }
+    if (sliderX < 0.25) setSliderX(0);
+    else if (sliderX > 0.75) setSliderX(1);
+    else setSliderX(0.5);
     setTimeout(() => setIsSnapping(false), 400);
   };
 
-  // Global mouse/touch move and up listeners
   useEffect(() => {
     window.addEventListener("mousemove", handlePointerMove);
     window.addEventListener("mouseup", handlePointerUp);
@@ -67,7 +69,6 @@ export default function Rygning() {
     };
   }, [isDragging, sliderX]);
 
-  // Touch start on the handle — needs passive: false to allow preventDefault
   useEffect(() => {
     const el = handleRef.current;
     if (!el) return;
@@ -76,7 +77,7 @@ export default function Rygning() {
   }, [sliderX]);
 
   const sliderPercent = `${sliderX * 100}%`;
-  const transition = isSnapping
+  const snapTransition = isSnapping
     ? "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)"
     : "none";
   const side = activeSide ? SIDES[activeSide] : null;
@@ -84,10 +85,10 @@ export default function Rygning() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-screen overflow-hidden select-none"
+      className={`relative w-full h-screen overflow-hidden select-none page-fade-in ${fadeVisible ? "visible" : ""}`}
     >
       <FlagButton />
-      <BackButton />
+      <BackButton onClick={() => fadeNavigate("/")} />
       <LungsBackground />
 
       {/* Left overlay */}
@@ -95,7 +96,7 @@ export default function Rygning() {
         className="absolute inset-0 bg-overlay-light opacity-30"
         style={{
           clipPath: `inset(0 ${100 - sliderX * 100}% 0 0)`,
-          transition,
+          transition: snapTransition,
         }}
       />
 
@@ -104,12 +105,9 @@ export default function Rygning() {
         className="absolute inset-0 bg-overlay-dark opacity-30"
         style={{
           clipPath: `inset(0 0 0 ${sliderPercent})`,
-          transition,
+          transition: snapTransition,
         }}
       />
-
-      {/* Lung image/animation goes here later */}
-      {/* <img src={lungImage} className="absolute inset-0 w-full h-full object-contain z-10 pointer-events-none" /> */}
 
       {/* Slider line + handle */}
       <div
@@ -117,44 +115,61 @@ export default function Rygning() {
         style={{
           left: sliderPercent,
           transform: "translateX(-50%)",
-          transition,
+          transition: snapTransition,
         }}
       >
-        <div className="w-2 flex-1 bg-ui-box" />
-        <div
-          ref={handleRef}
-          className="w-24 h-24 rounded-full bg-ui-box flex items-center justify-center shadow-xl cursor-grab active:cursor-grabbing shrink-0"
-          onMouseDown={handlePointerDown}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-12 h-12 text-primary"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
+        {/* Single continuous line */}
+        <div className="absolute top-0 bottom-0 w-2 bg-ui-box" />
+
+        {/* Handle centered on top of the line */}
+        <div className="absolute top-1/2 -translate-y-1/2">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.6,
+              delay: PAGE_FADE_DURATION + 0.3,
+              ease: [0.34, 1.56, 0.64, 1],
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M7 16l-4-4m0 0l4-4m-4 4h18m-4 4l4-4m0 0l-4-4"
-            />
-          </svg>
+            <div
+              ref={handleRef}
+              className="w-24 h-24 rounded-full bg-ui-box flex items-center justify-center shadow-xl cursor-grab active:cursor-grabbing"
+              onMouseDown={handlePointerDown}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-12 h-12 text-primary"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7 16l-4-4m0 0l4-4m-4 4h18m-4 4l4-4m0 0l-4-4"
+                />
+              </svg>
+            </div>
+          </motion.div>
         </div>
-        <div className="w-2 flex-1 bg-ui-box" />
       </div>
 
-      {/* Fade wrapper - fades on language switch */}
+      {/* Language fade wrapper */}
       <div
         style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
       >
-        <div
+        {/* Drag label */}
+        <motion.div
           className="absolute top-8 left-0 right-0 z-40 flex justify-center px-6"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: PAGE_FADE_DURATION + 0.6 }}
           style={{
             opacity: activeSide
               ? 0
               : Math.max(0, 1 - Math.abs(sliderX - 0.5) * 8),
-            transition: "opacity 0.3s ease",
             pointerEvents: activeSide ? "none" : "auto",
           }}
         >
@@ -163,45 +178,80 @@ export default function Rygning() {
               {SIDES.dragLabel}
             </span>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Bottom content */}
-        <div
-          className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-10 text-white"
-          style={{
-            opacity: activeSide ? 1 : 0,
-            transform: activeSide ? "translateY(0)" : "translateY(20px)",
-            transition: "opacity 0.4s ease, transform 0.4s ease",
-            pointerEvents: activeSide ? "auto" : "none",
-          }}
-        >
-          {side && (
-            <>
-              <h2 className="font-display font-semibold text-6xl mb-4">
+        {/* Side content — staggered */}
+        <AnimatePresence mode="wait">
+          {activeSide && side && (
+            <motion.div
+              key={activeSide}
+              className="absolute bottom-0 left-0 right-0 z-20 px-6 pb-10 text-white"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.2 } }}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.h2
+                className="font-display font-semibold text-6xl mb-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.05 }}
+              >
                 {side.heading}
-              </h2>
-              <p className="font-display font-light text-2xl mb-3">
+              </motion.h2>
+
+              <motion.p
+                className="font-display font-light text-2xl mb-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.15 }}
+              >
                 {side.intro}
-              </p>
-              <p className="font-display font-light text-2xl mb-3">
+              </motion.p>
+
+              <motion.p
+                className="font-display font-light text-2xl mb-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
+              >
                 {side.body}
-              </p>
+              </motion.p>
+
               <div className="flex gap-12">
                 {side.stats.map((stat, i) => (
-                  <div key={i}>
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.35 + i * 0.1 }}
+                  >
                     <p className="font-display font-semibold text-8xl">
                       {stat.value}
                     </p>
                     <p className="font-display font-semibold text-2xl opacity-90 mt-1">
                       {stat.description}
                     </p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </div>
+
+      {/* Fade to black */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 999,
+          background: "#000",
+          opacity: fading ? 1 : 0,
+          transition: "opacity 0.7s ease",
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }
