@@ -97,26 +97,32 @@ const translations = {
       stages: [
         {
           heading: "Hormoner og kvinders hjerter",
-          body: "Kønshormonet østrogen dannes i æggestokkene. Østrogen beskytter kvinders kroppe mod hjerte-kar-sygdom frem til overgangsalderen. Hvordan kvinders hormoner påvirker hjertet, er først for nylig begyndt at få mere opmærksomhed i forskning.\n\nTræk og undersøg, hvad der sker med kvinders blodkar, når de bliver ældre.",
+          body: "Hvordan kvinders hormoner påvirker hjertet, har først for nylig fået mere opmærksomhed i forskningen. Kvinders kønshormoner beskytter kroppen mod hjertesygdom, men nyere studier viser også, at kvinder med hormonelle sygdomme som endometriose har op til 20% forøget risiko for hjertesygdomme.",
         },
         {
           heading: "Kvinder har meget østrogen i blodet",
-          body: "Kønshormonet østrogen beskytter hjertet mod forkalkning, stive blodkar og højt blodtryk frem til overgangsalderen.",
+          body: "Mænd dør syv år tidligere af hjertekarsygdom, end kvinder. Det skyldes, at det kvindelige kønshormon østrogen beskytter hjertet imod forkalkning, stive blodkar og højt blodtryk.",
+          caption: "● Blodårerne er glatte og flowet er godt",
         },
         {
           heading: "Mængden af østrogen falder drastisk",
-          body: "De fleste kvinder går i overgangsalderen, når de er mellem 45 og 55 år. Herefter falder mængden af østrogen, og risikoen for hjerte-kar-sygdomme begynder at stige kraftigt. Blodkarrene bliver stivere, og blodtrykket stiger.",
+          body: "De fleste kvinder går i overgangsalderen omkring de 50 år. Herefter falder mængden af østrogen, og risikoen for hjertekarsygdomme begynder at stige voldsomt. blodkarrene bliver stivere og blodtrykket stiger.",
+          caption:
+            "● Væggene bliver tykkere, og der opstår forkalkninger på indersiden",
         },
         {
           heading: "Kvinders blodtryk bliver højere end mænds",
-          body: "Omkring 60-65-årsalderen bliver kvinders blodtryk gennemsnitligt højere end mænds. Forhøjet blodtryk øger risikoen for hjerte-kar-sygdomme.",
+          body: "Omkring 60–65-årsalderen får mange kvinder forhøjet blodtryk, og gennemsnitligt bliver kvinders blodtryk herefter højere end mænds.",
+          caption: "● Blodtrykket bliver hurtigere",
         },
         {
           heading: "Kvinder og mænds blodkar er lige syge",
-          body: "Omtrent 20 år efter, at en kvinde er gået i overgangsalderen, er deres risiko for hjerte-kar-sygdom den samme som mænds.",
+          body: "Omtrent 20 år efter overgangsalderen er kvinders risiko for hjerte-kar-sygdom næsten på niveau med mænds.",
+          caption:
+            "● Endnu stærkere åreforkalkning, stive kar og højt blodtryk",
         },
         {
-          heading: "Den oversete sammenhæng: hormoner og hjertet",
+          heading: "Den oversete sammenhæng:",
           body: "Mænd dør syv år tidligere end kvinder af hjerte-kar-sygdom, fordi østrogen beskytter kvinders hjerter.\n\nNyere forskning viser dog, at sygdomme i kvinders hormoner som for eksempel endometriose og PCOS kan øge risikoen for hjerte-kar-sygdom med op til 30 %. Der mangler stadig forskning på området.",
         },
       ],
@@ -331,22 +337,28 @@ const translations = {
         {
           heading: "Women have a lot of oestrogen in the blood",
           body: "The sex hormone oestrogen protects the heart against calcification, stiff blood vessels and high blood pressure until menopause.",
+          caption: "● Blood vessels are smooth and flow is good",
         },
         {
           heading: "The amount of oestrogen drops drastically",
           body: "Most women go through menopause between the ages of 45 and 55. After this, the amount of oestrogen falls, and the risk of cardiovascular disease begins to rise sharply. Blood vessels become stiffer and blood pressure rises.",
+          caption:
+            "● The walls become thicker and calcifications appear on the inside",
         },
         {
           heading: "Women's blood pressure becomes higher than men's",
           body: "Around the age of 60-65, women's blood pressure becomes on average higher than men's. High blood pressure increases the risk of cardiovascular disease.",
+          caption: "● Blood pressure increases",
         },
         {
           heading: "Women and men's blood vessels are equally unhealthy",
           body: "Approximately 20 years after a woman has gone through menopause, their risk of cardiovascular disease is the same as men's.",
+          caption:
+            "● Even stronger calcification, stiff vessels and high blood pressure",
         },
         {
           heading: "The overlooked connection: hormones and the heart",
-          body: "Men die seven years earlier than women from cardiovascular disease, because oestrogen protects women's hearts.\n\nNewer research shows that diseases in women's hormones such as endometriosis and PCOS can increase the risk of cardiovascular disease by up to 30%. More research is still needed in this area.",
+          body: "Men die seven years earlier than women from cardiovascular disease, because oestrogen protects women's hearts. Newer research shows that diseases in women's hormones such as endometriosis and PCOS can increase the risk of cardiovascular disease by up to 30%. More research is still needed in this area.",
         },
       ],
     },

@@ -130,34 +130,50 @@ export default function Hormoner() {
           style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
         >
           {/* Text area */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIndex}
-              className="shrink-0 overflow-hidden"
-              style={{ height: "310px" }}
-              initial={{ opacity: 0, y: 12 }}
+          <motion.div
+            key={activeIndex}
+            className="shrink-0 overflow-hidden"
+            style={{ height: "310px" }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.35 }}
+          >
+            <motion.h2
+              className="font-display font-semibold text-primary text-5xl mb-1 leading-snug"
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.35 }}
+              transition={{ duration: 0.4, delay: 0.05 }}
             >
-              <motion.h2
-                className="font-display font-semibold text-primary text-5xl mb-1 leading-snug"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.05 }}
-              >
-                {content.heading || "Hormoner og kvinders hjerter"}
-              </motion.h2>
-              <motion.p
-                className="font-display font-light text-primary text-3xl leading-snug"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.15 }}
-              >
-                {content.body || "[ Tekst fra museet ]"}
-              </motion.p>
-            </motion.div>
-          </AnimatePresence>
+              {content.heading || "Hormoner og kvinders hjerter"}
+            </motion.h2>
+            <motion.p
+              className="font-display font-light text-primary text-3xl leading-snug"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.15 }}
+            >
+              {content.body || "[ Tekst fra museet ]"}
+            </motion.p>
+
+            {/* Caption — fixed slot, only text changes, no layout shift */}
+            <div className="mt-4" style={{ height: "2rem" }}>
+              <AnimatePresence mode="wait">
+                {content.caption && (
+                  <motion.p
+                    key={content.caption}
+                    className="font-display font-semibold text-primary text-2xl"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: 0.5 }}
+                  >
+                    {content.caption}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
 
           {/* Blood vessel animation OR hint */}
           <div className="shrink-0 relative" style={{ height: "160px" }}>
