@@ -1,36 +1,118 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 
 const STORAGE_KEY = "hjerteskærm_quiz_scores";
 
+// --- Storage helpers ---
+
+function loadScores() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
 function saveScore(score, total) {
   try {
-    const existing = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    existing.push({ score, total, date: Date.now() });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-    return existing;
+    const existing = loadScores();
+    const entry = { score, total, date: Date.now() };
+    const updated = [...existing, entry].slice(-5000);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    return updated;
   } catch {
-    return [{ score, total }];
+    return [{ score, total, date: Date.now() }];
   }
 }
 
-function getPercentile(score, total) {
+function calcStats(allScores, myScore, total) {
+  const previous = allScores.slice(0, -1);
+  const myRatio = myScore / total;
+  let percentile = 50;
+  if (previous.length > 0) {
+    const beaten = previous.filter((s) => s.score / s.total < myRatio).length;
+    percentile = Math.round((beaten / previous.length) * 100);
+  }
+  return {
+    percentile,
+    totalVisitors: allScores.length,
+    totalAttempts: loadAttemptCount(),
+  };
+}
+
+const ATTEMPTS_KEY = "hjerteskærm_quiz_attempts";
+
+function loadAttemptCount() {
   try {
-    const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    if (all.length <= 1) return 50;
-    const myRatio = score / total;
-    const beaten = all.filter((s) => s.score / s.total < myRatio).length;
-    return Math.round((beaten / (all.length - 1)) * 100);
+    return parseInt(localStorage.getItem(ATTEMPTS_KEY) || "0", 10);
   } catch {
-    return 50;
+    return 0;
   }
 }
 
+function incrementAttempts() {
+  try {
+    const next = loadAttemptCount() + 1;
+    localStorage.setItem(ATTEMPTS_KEY, String(next));
+    return next;
+  } catch {
+    return 1;
+  }
+}
+
+// --- Animation: count-up hook ---
+function useCountUp(target, duration = 1200, startDelay = 0) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    setValue(0);
+    let timeout;
+    timeout = setTimeout(() => {
+      const startTime = performance.now();
+      const step = (now) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setValue(Math.round(eased * target));
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, startDelay);
+    return () => clearTimeout(timeout);
+  }, [target, duration, startDelay]);
+  return value;
+}
+
+// Inject heartbeat keyframe once
+if (typeof document !== "undefined" && !document.getElementById("hb-style")) {
+  const s = document.createElement("style");
+  s.id = "hb-style";
+  s.textContent = `
+    @keyframes heartbeat {
+      0%   { transform: scale(1); }
+      14%  { transform: scale(1.06); }
+      28%  { transform: scale(1); }
+      42%  { transform: scale(1.04); }
+      70%  { transform: scale(1); }
+      100% { transform: scale(1); }
+    }
+    .heartbeat { animation: heartbeat 1.6s ease-in-out infinite; }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-slide-up { animation: fadeSlideUp 0.6s ease forwards; }
+  `;
+  document.head.appendChild(s);
+}
+
+// --- Screen constants ---
 const SCREEN_INTRO = "intro";
 const SCREEN_QUESTION = "question";
 const SCREEN_EXPLANATION = "explanation";
 const SCREEN_RESULTS = "results";
+
+// --- Component ---
 
 function QuizOverlay({ onClose, visible }) {
   const { language } = useLanguage();
@@ -42,13 +124,12 @@ function QuizOverlay({ onClose, visible }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showCorrect, setShowCorrect] = useState(false);
   const [score, setScore] = useState(0);
-  const [percentile, setPercentile] = useState(50);
+  const [stats, setStats] = useState(null);
   const [showQuitDialog, setShowQuitDialog] = useState(false);
   const [quitVisible, setQuitVisible] = useState(false);
 
   const question = t.questions[currentQ];
   const isCorrect = selectedAnswer === question?.correct;
-
   const isActiveQuiz =
     screen === SCREEN_QUESTION || screen === SCREEN_EXPLANATION;
 
@@ -87,6 +168,7 @@ function QuizOverlay({ onClose, visible }) {
     setScore(0);
     setSelectedAnswer(null);
     setShowCorrect(false);
+    setStats(null);
     transitionTo(SCREEN_QUESTION);
   };
 
@@ -104,8 +186,11 @@ function QuizOverlay({ onClose, visible }) {
   const handleNext = () => {
     const nextQ = currentQ + 1;
     if (nextQ >= t.questions.length) {
-      saveScore(score, t.questions.length);
-      setPercentile(getPercentile(score, t.questions.length));
+      const currentScore = selectedAnswer === question?.correct ? score : score;
+      const allScores = saveScore(currentScore, t.questions.length);
+      incrementAttempts();
+      const computed = calcStats(allScores, currentScore, t.questions.length);
+      setStats(computed);
       transitionTo(SCREEN_RESULTS);
     } else {
       setCurrentQ(nextQ);
@@ -120,6 +205,7 @@ function QuizOverlay({ onClose, visible }) {
     setScore(0);
     setSelectedAnswer(null);
     setShowCorrect(false);
+    setStats(null);
     transitionTo(SCREEN_INTRO);
   };
 
@@ -294,32 +380,123 @@ function QuizOverlay({ onClose, visible }) {
           )}
 
           {/* RESULTS SCREEN */}
-          {screen === SCREEN_RESULTS && (
-            <div className="flex flex-col items-center justify-between h-full px-10 py-16">
-              <h2 className="font-display font-semibold text-primary text-5xl mt-8 text-center">
-                {t.resultsTitle}
-              </h2>
-              <div className="flex flex-col items-center gap-4">
-                <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
-                  {t.resultsText.split("{percentile}")[0]}
-                </p>
-                <p className="font-display font-semibold text-primary text-8xl">
-                  {percentile}%
-                </p>
-                <p className="font-display font-light text-primary text-2xl text-center">
-                  {t.resultsText.split("{percentile}")[1]}
-                </p>
-              </div>
-              <button
-                onClick={handlePlayAgain}
-                className="bg-secondary text-primary font-display font-semibold text-3xl rounded-full px-16 py-5 mb-4"
-              >
-                {t.playAgainBtn}
-              </button>
-            </div>
+          {screen === SCREEN_RESULTS && stats && (
+            <ResultsScreen
+              score={score}
+              total={t.questions.length}
+              stats={stats}
+              t={t}
+              onPlayAgain={handlePlayAgain}
+            />
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// --- Results screen as its own component so hooks run cleanly on mount ---
+function ResultsScreen({ score, total, stats, t, onPlayAgain }) {
+  const animatedScore = useCountUp(score, 900, 200);
+  const animatedPct = useCountUp(stats.percentile, 1400, 700);
+  const [showPercentile, setShowPercentile] = useState(false);
+  const [showButton, setShowButton] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setShowPercentile(true), 900);
+    const t2 = setTimeout(() => setShowButton(true), 1800);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
+
+  const getMessage = (percentile) => {
+    const m = t.resultsMessages;
+    if (percentile >= 90) return m.top90;
+    if (percentile >= 70) return m.top70;
+    if (percentile >= 50) return m.top50;
+    if (percentile >= 30) return m.top30;
+    return m.below30;
+  };
+
+  return (
+    <div className="flex flex-col items-center h-full px-10 py-10">
+      {/* Header */}
+      <h2
+        className="font-display font-semibold text-primary leading-none mb-4 fade-slide-up"
+        style={{ fontSize: "5.5rem", animationDelay: "0ms" }}
+      >
+        {t.resultsHeading}
+      </h2>
+
+      {/* Score — counts up */}
+      <p
+        className="font-display font-semibold text-primary leading-none fade-slide-up"
+        style={{ fontSize: "9rem", animationDelay: "100ms", opacity: 0 }}
+      >
+        {animatedScore}
+        <span className="opacity-30" style={{ fontSize: "4.5rem" }}>
+          /{total}
+        </span>
+      </p>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Percentile block */}
+      <div
+        className="flex flex-col items-center"
+        style={{
+          opacity: showPercentile ? 1 : 0,
+          transform: showPercentile ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.7s ease, transform 0.7s ease",
+        }}
+      >
+        <p className="font-display font-normal text-primary text-3xl text-center mb-3">
+          {t.resultsBetterThan}
+        </p>
+        <p
+          className={`font-display font-semibold text-primary leading-none${showPercentile ? " heartbeat" : ""}`}
+          style={{ fontSize: "7rem" }}
+        >
+          {animatedPct}%
+        </p>
+        <p className="font-display font-light text-primary text-3xl text-center mt-3">
+          {t.resultsOfVisitors}
+        </p>
+
+        {/* Attempts — subtle line with standout number */}
+        <p
+          className="font-display font-light text-primary opacity-35 text-center mt-4"
+          style={{ fontSize: "1.1rem" }}
+        >
+          {t.resultsBasedOn}{" "}
+          <span
+            className="font-semibold"
+            style={{ fontSize: "1.6rem", opacity: 1 }}
+          >
+            {stats.totalAttempts}
+          </span>{" "}
+          {t.resultsAttempts}
+        </p>
+      </div>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Button — fades in last */}
+      <button
+        onClick={onPlayAgain}
+        className="bg-secondary text-primary font-display font-semibold text-4xl rounded-full px-16 py-5"
+        style={{
+          opacity: showButton ? 1 : 0,
+          transform: showButton ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.5s ease, transform 0.5s ease",
+        }}
+      >
+        {t.playAgainBtn}
+      </button>
     </div>
   );
 }

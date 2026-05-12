@@ -171,6 +171,23 @@ const translations = {
       quitBody: "Hvis du forlader quizzen nu, mister du al din fremgang.",
       quitConfirm: "Forlad quiz",
       quitCancel: "Fortsæt quiz",
+      // Results screen strings
+      resultsHeading: "Resultat",
+      resultsBetterThan: "Du klarede dig bedre end",
+      resultsOfVisitors: "af alle andre besøgende",
+      resultsBasedOn: "Baseret på",
+      resultsAttempts: "forsøg i alt",
+      resultsMessages: {
+        top90:
+          "Imponerende! Du er en af de skarpeste hjerte-kendere vi har set! 🏆",
+        top70:
+          "Godt klaret! Du ved markant mere om hjertet end de fleste besøgende.",
+        top50:
+          "Flot! Du klarer dig over middel — hjertet har ingen hemmeligheder for dig.",
+        top30:
+          "Ikke dårligt! Der er stadig et par ting at lære om det oversete hjerte.",
+        below30: "Hjertet gemmer stadig på hemmeligheder for dig — prøv igen!",
+      },
       questions: [
         {
           question: "[ Spørgsmål 1 fra museet ]",
@@ -405,6 +422,23 @@ const translations = {
       quitBody: "If you leave the quiz now, you will lose all your progress.",
       quitConfirm: "Leave quiz",
       quitCancel: "Continue quiz",
+      // Results screen strings
+      resultsHeading: "Result",
+      resultsBetterThan: "You did better than",
+      resultsOfVisitors: "of all other visitors",
+      resultsBasedOn: "Based on",
+      resultsAttempts: "attempts in total",
+      resultsMessages: {
+        top90:
+          "Impressive! You're one of the sharpest heart experts we've seen! 🏆",
+        top70:
+          "Well done! You know significantly more about the heart than most visitors.",
+        top50:
+          "Great! You're above average — the heart holds no secrets for you.",
+        top30:
+          "Not bad! There are still a few things to learn about the overlooked heart.",
+        below30: "The heart still has secrets for you — try again!",
+      },
       questions: [
         {
           question: "[ Question 1 from museum ]",
