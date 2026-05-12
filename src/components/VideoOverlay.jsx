@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import testvideo from "../assets/testlokalvideo.mp4"
 
 // Swap this path out for the real video once received from the museum
-const VIDEO_SRC = "https://www.w3schools.com/html/mov_bbb.mp4";
+const VIDEO_SRC = testvideo;
+
 
 function VideoOverlay({ onClose, visible }) {
   const videoRef = useRef(null);
