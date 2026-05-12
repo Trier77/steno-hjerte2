@@ -86,15 +86,15 @@ export default function StartSide() {
         </section>
 
         <HotspotButton
-          className="depri-knap left-1/2 top-110"
+          className="depri-knap left-1/2 top-100"
           onClick={() => goTo("/depression")}
         />
         <HotspotButton
-          className="ryge-knap left-100 top-230"
+          className="ryge-knap left-115 top-240"
           onClick={() => goTo("/rygning")}
         />
         <HotspotButton
-          className="kraeft-knap left-170 top-260"
+          className="kraeft-knap left-155 top-275"
           onClick={() => goTo("/kraeftbehandling")}
         />
         <HotspotButton
@@ -106,7 +106,7 @@ export default function StartSide() {
           onClick={() => goTo("/graviditet")}
         />
         <HotspotButton
-          className="hormon-knap left-120 top-420"
+          className="hormon-knap left-118 top-418"
           onClick={() => goTo("/hormoner")}
         />
       </section>
@@ -114,7 +114,7 @@ export default function StartSide() {
       <section
         key={language + "-hjerteknap"}
         style={{ animation: "fadeIn 0.6s ease" }}
-        className="absolute left-8 top-90 flex flex-col gap-5 ml-10 scale-150"
+        className="absolute left-8 top-88 flex flex-col gap-5 ml-10 scale-150"
       >
         <NavButton
           icon="play"
