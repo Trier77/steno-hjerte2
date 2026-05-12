@@ -89,35 +89,35 @@ const translations = {
     },
     hormoner: {
       dragHint: "← Alder →",
-      vesselHintStart: "Hvad sker der med kvinders blodkar over årene?",
-      vesselHintStartBold: "Træk og se!",
-      vesselHintEnd: "Du har nu set, hvad årene gør ved blodkarrene!",
+      vesselHintStart: "Træk og undersøg, hvad der sker med kvinders blodkar,",
+      vesselHintStartBold: "når de bliver ældre",
+      vesselHintEnd: "Du har nu set, hvad alderen gør ved blodkarrene!",
       sliderStart: "Før",
       sliderEnd: "Efter",
       stages: [
         {
           heading: "Hormoner og kvinders hjerter",
-          body: "Hvordan kvinders hormoner påvirker hjertet, har først for nylig fået mere opmærksomhed i forskningen. Kvinders kønshormoner beskytter kroppen mod hjertesygdom, men nyere studier viser også, at kvinder med hormonelle sygdomme som endometriose har op til 20% forøget risiko for hjertesygdomme.",
+          body: "Kønshormonet østrogen dannes i æggestokkene. Østrogen beskytter kvinders kroppe mod hjerte-kar-sygdom frem til overgangsalderen. Hvordan kvinders hormoner påvirker hjertet, er først for nylig begyndt at få mere opmærksomhed i forskning.",
         },
         {
           heading: "Kvinder har meget østrogen i blodet",
-          body: "Mænd dør syv år tidligere af hjertekarsygdom, end kvinder. Det skyldes, at det kvindelige kønshormon østrogen beskytter hjertet imod forkalkning, stive blodkar og højt blodtryk.",
+          body: "Kønshormonet østrogen beskytter hjertet mod forkalkning, stive blodkar og højt blodtryk frem til overgangsalderen.",
           caption: "● Blodårerne er glatte og flowet er godt",
         },
         {
           heading: "Mængden af østrogen falder drastisk",
-          body: "De fleste kvinder går i overgangsalderen omkring de 50 år. Herefter falder mængden af østrogen, og risikoen for hjertekarsygdomme begynder at stige voldsomt. blodkarrene bliver stivere og blodtrykket stiger.",
+          body: "De fleste kvinder går i overgangsalderen, når de er mellem 45 og 55 år. Herefter falder mængden af østrogen, og risikoen for hjerte-kar-sygdomme begynder at stige kraftigt. Blodkarrene bliver stivere, og blodtrykket stiger.",
           caption:
             "● Væggene bliver tykkere, og der opstår forkalkninger på indersiden",
         },
         {
           heading: "Kvinders blodtryk bliver højere end mænds",
-          body: "Omkring 60–65-årsalderen får mange kvinder forhøjet blodtryk, og gennemsnitligt bliver kvinders blodtryk herefter højere end mænds.",
+          body: "Omkring 60-65-årsalderen bliver kvinders blodtryk gennemsnitligt højere end mænds. Forhøjet blodtryk øger risikoen for hjerte-kar-sygdomme.",
           caption: "● Blodtrykket bliver hurtigere",
         },
         {
           heading: "Kvinder og mænds blodkar er lige syge",
-          body: "Omtrent 20 år efter overgangsalderen er kvinders risiko for hjerte-kar-sygdom næsten på niveau med mænds.",
+          body: "Omtrent 20 år efter, at en kvinde er gået i overgangsalderen, er deres risiko for hjerte-kar-sygdom den samme som mænds.",
           caption:
             "● Endnu stærkere åreforkalkning, stive kar og højt blodtryk",
         },
@@ -332,7 +332,7 @@ const translations = {
       stages: [
         {
           heading: "Hormones and women's hearts",
-          body: "The sex hormone oestrogen is produced in the ovaries. Oestrogen protects women's bodies against cardiovascular disease until menopause. How women's hormones affect the heart has only recently begun to receive more attention in research.\n\nDrag and explore what happens to women's blood vessels as they get older.",
+          body: "The sex hormone oestrogen is produced in the ovaries. Oestrogen protects women's bodies against cardiovascular disease until menopause. How women's hormones affect the heart has only recently begun to receive more attention in research.",
         },
         {
           heading: "Women have a lot of oestrogen in the blood",
@@ -358,7 +358,7 @@ const translations = {
         },
         {
           heading: "The overlooked connection: hormones and the heart",
-          body: "Men die seven years earlier than women from cardiovascular disease, because oestrogen protects women's hearts. Newer research shows that diseases in women's hormones such as endometriosis and PCOS can increase the risk of cardiovascular disease by up to 30%. More research is still needed in this area.",
+          body: "Men die seven years earlier than women from cardiovascular disease, because oestrogen protects women's hearts.\n\nNewer research shows that diseases in women's hormones such as endometriosis and PCOS can increase the risk of cardiovascular disease by up to 30%. More research is still needed in this area.",
         },
       ],
     },
