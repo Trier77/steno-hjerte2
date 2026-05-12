@@ -1,5 +1,6 @@
 import HotspotButton from "./HotspotButton";
 import { useState, useRef, useEffect, useCallback } from "react";
+import {animate} from "framer-motion";
 
 // --- Geometri-konstanter ---
 const CX = 300; // Centrum X
@@ -8,7 +9,7 @@ const SEG_OUTER_R = 255; // Ydre kant af røde segmenter
 const SEG_INNER_R = 190; // Indre kant af røde segmenter
 const TRACK_OUTER_R = 190; // Ydre kant af grå track
 const TRACK_INNER_R = 140; // Indre kant af grå track
-const DOT_R = 164; // Radius hvor den blå cirkel kører
+const DOT_R = 165; // Radius hvor den blå cirkel kører
 
 // --- Hjælpefunktioner ---
 const toRad = (d) => (d * Math.PI) / 180;
@@ -52,18 +53,26 @@ function Speedometer({onSegmentChange, labels =[]}) {
 
   const [angle, setAngle] = useState(156); // Startposition (i segment 0)
   const svgRef = useRef(null);
-  const isDragging = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const SEGMENTS = [
-    { id: 0, startDeg: 180, endDeg: 135, label: labels[0] ?? "Graviditet" },
-    { id: 1, startDeg: 135, endDeg: 90,  label: labels[1] ?? "Graviditetsdiabetes" },
-    { id: 2, startDeg: 90,  endDeg: 45,  label: labels[2] ?? "Svangerskabsforgiftning" },
-    { id: 3, startDeg: 45,  endDeg: 0,   label: labels[3] ?? "For tidlig fødsel" },
+    { id: 0, startDeg: 180, endDeg: 135, midDeg:157, label: labels[0] ?? "Graviditet" },
+    { id: 1, startDeg: 135, endDeg: 90, midDeg:112, label: labels[1] ?? "Graviditetsdiabetes" },
+    { id: 2, startDeg: 90,  endDeg: 45, midDeg:67, label: labels[2] ?? "Svangerskabsforgiftning" },
+    { id: 3, startDeg: 45,  endDeg: 0, midDeg:22, label: labels[3] ?? "For tidlig fødsel" },
   ];
   
   // Finder hvilket segment den blå cirkel er i (eller null)
   const activeSegment =
     SEGMENTS.find((s) => angle <= s.startDeg && angle >= s.endDeg)?.id ?? null;
+
+    const handleSegmentClick = (midDeg) => {
+  animate(angle, midDeg, {
+    duration: 0.5,
+    ease: "easeInOut",
+    onUpdate: (v) => setAngle(v),
+  });
+};
 
   // Omregner museposition til vinkel i SVG-koordinater
   const getAngleFromEvent = useCallback((e) => {
@@ -85,7 +94,7 @@ function Speedometer({onSegmentChange, labels =[]}) {
 
   const handleMouseDown = (e) => {
     e.preventDefault();
-    isDragging.current = true;
+    setIsDragging(true);
   };
 
   useEffect(()=> {
@@ -93,12 +102,12 @@ function Speedometer({onSegmentChange, labels =[]}) {
   },[activeSegment, onSegmentChange]);
 
   useEffect(() => {
-      const onMove = (e) => {
-      if (!isDragging.current) return;
+     const onMove = (e) => {
+      if (!isDragging) return;
       getAngleFromEvent(e);
     };
     const onUp = () => {
-      isDragging.current = false;
+      setIsDragging(false);
     };
 
     window.addEventListener("mousemove", onMove);
@@ -112,7 +121,7 @@ function Speedometer({onSegmentChange, labels =[]}) {
       window.removeEventListener("touchmove", onMove);
       window.removeEventListener("touchend", onUp);
     };
-  }, [getAngleFromEvent,]); 
+  }, [getAngleFromEvent, isDragging]); 
 
   const dotPos = polarToCart(CX, CY, DOT_R, angle);
 
@@ -175,6 +184,10 @@ function Speedometer({onSegmentChange, labels =[]}) {
           // stroke="white"
           // strokeWidth={2}
            filter="url(#round-corners)"
+
+           //Kan slettes, hvis vi kun vil have at man kan trykke på emne felterne
+           style={{ transition: "fill 0.35s ease", cursor: "pointer" }}
+          onClick={() => handleSegmentClick(seg.midDeg)}
         />
       ))}
       
@@ -195,7 +208,8 @@ function Speedometer({onSegmentChange, labels =[]}) {
           // stroke="white"
           // strokeWidth={2}
            filter="url(#round-corners)"
-          style={{ transition: "fill 0.35s ease" }}
+          style={{ transition: "fill 0.35s ease", cursor: "pointer" }}
+          onClick={() => handleSegmentClick(seg.midDeg)}
           
         />
       ))}
@@ -262,13 +276,23 @@ function Speedometer({onSegmentChange, labels =[]}) {
         </text>
       ))}
 
-      {/* Blå draggable cirkel */}
+      
+      {/* Ping-effekt */}
       <circle
         cx={dotPos.x}
         cy={dotPos.y}
         r="16"
         fill="var(--color-primary)"
-        style={{ cursor: isDragging.current ? "grabbing" : "grab" }}
+        style={{ animation: isDragging ?  "none" : "ping 1.5s ease-out infinite",
+          transformOrigin: `${dotPos.x}px ${dotPos.y}px` }}
+      />
+      {/* Blå draggable cirkel */}
+      <circle
+        cx={dotPos.x}
+        cy={dotPos.y}
+        r={isDragging ? 22 : 16}
+        fill="var(--color-primary)"
+        style={{ cursor: isDragging ? "grabbing" : "grab", transition: "r 0.2s ease" }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleMouseDown}
       />

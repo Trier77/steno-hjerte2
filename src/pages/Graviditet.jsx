@@ -58,7 +58,7 @@ function Graviditet() {
             </button>
           )}
         </div>
-        <div className="absolute bottom-0 left-0 right-0" style={{ transformOrigin: "bottom center", transform: "scale(0.75)" }}>
+        <div className="absolute -bottom-6 left-0 right-0" style={{ transformOrigin: "bottom center", transform: "scale(0.75)" }}>
           <Speedometer onSegmentChange={handleSegmentChange} labels={t.labels} />
         </div>
          
