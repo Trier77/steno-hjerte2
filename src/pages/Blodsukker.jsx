@@ -11,7 +11,6 @@ import BloodBackground from "../components/animated backgrounds/BloodBackground"
 // ─── Constants ────────────────────────────────────────────────────────────────
 const PERSON_COUNT = 24;
 const SNAP_POSITIONS = [0, 50, 100];
-const PERCENTAGES = { men: 40, women: 55 };
 const PAGE_FADE_DURATION = 0.4;
 
 // ─── Sugar cube flow ──────────────────────────────────────────────────────────
@@ -27,7 +26,7 @@ const CUBE_TRAITS = Array.from({ length: 20 }, (_, i) => ({
   wobble: ((i * 17) % 12) - 6, // slight vertical drift ±6px
 }));
 
-const STAGE_CUBE_COUNT = [0, 8, 20];
+const STAGE_CUBE_COUNT = [3, 8, 20];
 
 // Inject keyframes once
 const FLOW_STYLE = `
@@ -122,62 +121,122 @@ function SugarCubes({ stage }) {
 }
 
 // ─── Person icon ──────────────────────────────────────────────────────────────
-function PersonIcon({ gender, size = 32 }) {
+const GENDER_CONFIG = {
+  man: { total: 10, redCount: 4, multiplier: "140%" },
+  woman: { total: 10, redCount: 5, multiplier: "185%" },
+};
+
+const FIGURE_SIZE = 64; // px wide
+const FIGURE_HEIGHT = 110; // px tall — fixed so man/woman are identical height
+
+// Crossfades between blue and red in-place — no unmount/remount
+function PersonIcon({ gender, isRed, appearDelay, swapDelay }) {
+  const blueSrc = `/src/assets/icons/${gender}-blue.svg`;
+  const redSrc = `/src/assets/icons/${gender}-red.svg`;
+
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, scale: 0.4, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{
+        duration: 0.4,
+        delay: appearDelay,
+        ease: [0.34, 1.56, 0.64, 1],
+      }}
       style={{
-        width: size,
-        height: size * 1.8,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        position: "relative",
+        width: FIGURE_SIZE,
+        height: FIGURE_HEIGHT,
+        flexShrink: 0,
       }}
     >
-      <img
-        src={
-          gender === "man"
-            ? "/src/assets/icons/man.png"
-            : "/src/assets/icons/woman.png"
-        }
+      {/* Blue — always present, fades out when turning red */}
+      <motion.img
+        src={blueSrc}
         alt=""
-        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        animate={{ opacity: isRed ? 0 : 1 }}
+        transition={{ duration: 0.35, delay: isRed ? swapDelay : 0 }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+        }}
       />
-    </div>
+      {/* Red — layered on top, fades in when turning red */}
+      <motion.img
+        src={redSrc}
+        alt=""
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isRed ? 1 : 0 }}
+        transition={{ duration: 0.35, delay: isRed ? swapDelay : 0 }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+        }}
+      />
+    </motion.div>
   );
 }
 
-function GenderRow({ label, gender, stage, percent }) {
+function GenderRow({ gender, stage }) {
+  const { total, redCount, multiplier } = GENDER_CONFIG[gender];
+
   return (
-    <div className="flex flex-row items-center gap-3 w-full">
-      <p className="font-display font-semibold text-primary text-2xl shrink-0 w-20">
-        {label}
-      </p>
-      <div
-        className="flex flex-row flex-wrap gap-1 items-end flex-1"
-        style={{ minHeight: "60px" }}
-      >
-        {Array.from({ length: PERSON_COUNT }).map((_, i) => (
-          <PersonIcon key={i} gender={gender} size={24} />
-        ))}
+    <div className="relative flex flex-row items-center justify-center w-full">
+      {/* Figures — truly centered, badge is absolute so it doesn't push them */}
+      <div className="flex flex-row items-end justify-center gap-1 w-full">
+        {Array.from({ length: total }, (_, i) => {
+          const isRed = stage === 2 && i >= total - redCount;
+          const redIndex = i - (total - redCount);
+          return (
+            <PersonIcon
+              key={`${gender}-${i}`}
+              gender={gender}
+              isRed={isRed}
+              appearDelay={stage === 1 ? i * 0.06 : 0}
+              swapDelay={isRed ? redIndex * 0.1 : 0}
+            />
+          );
+        })}
       </div>
+
+      {/* Multiplier badge — absolutely positioned so it doesn't affect centering */}
       <div
-        className="shrink-0 w-24 flex flex-col items-end"
-        style={{ minHeight: "60px" }}
+        style={{
+          position: "absolute",
+          right: 0,
+          top: "50%",
+          transform: "translateY(-50%)",
+        }}
       >
         <AnimatePresence>
           {stage === 2 && (
             <motion.div
-              key="percent"
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-              className="flex items-center gap-1"
+              key="multiplier"
+              initial={{ opacity: 0, scale: 0.5, x: 12 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.5, x: 12 }}
+              transition={{
+                duration: 0.45,
+                delay: redCount * 0.1 + 0.4,
+                ease: [0.34, 1.56, 0.64, 1],
+              }}
+              className="flex flex-row items-center gap-1"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#e05555">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#e05555">
                 <path d="M12 4 L20 20 H4 Z" />
               </svg>
-              <p className="font-display font-semibold text-2xl">{percent}%</p>
+              <p
+                className="font-display font-bold leading-none"
+                style={{ color: "#e05555", fontSize: "1.6rem" }}
+              >
+                {multiplier}
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -315,9 +374,16 @@ export default function Blodsukker() {
 
       {/* Upper area — vertical slider on the left */}
       <div className="relative z-10 flex-1 flex flex-row px-8 gap-6">
-        <div
+        <motion.div
           className="flex items-center justify-center w-20"
           style={{ marginTop: "15vh", height: "50vh" }}
+          initial={{ opacity: 0, x: -24 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            duration: 0.6,
+            delay: PAGE_FADE_DURATION + 0.3,
+            ease: [0.25, 1, 0.5, 1],
+          }}
         >
           <div
             ref={sliderRef}
@@ -378,10 +444,16 @@ export default function Blodsukker() {
               </motion.div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Stage label */}
-        <div className="flex items-end pb-4" style={{ marginBottom: "4vh" }}>
+        <motion.div
+          className="flex items-end pb-4"
+          style={{ marginBottom: "4vh" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: PAGE_FADE_DURATION + 0.6 }}
+        >
           <AnimatePresence mode="wait">
             <motion.p
               key={stage}
@@ -394,13 +466,25 @@ export default function Blodsukker() {
               {t?.stageLabels?.[stage] || ""}
             </motion.p>
           </AnimatePresence>
-        </div>
+        </motion.div>
       </div>
 
       {/* Infobox */}
-      <div
+      <motion.div
         className="relative z-10 w-full rounded-t-4xl px-8 pt-6 pb-8"
-        style={{ height: "32vh", backgroundColor: "rgba(241,241,241,0.7)" }}
+        initial={{ y: 120, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{
+          duration: 0.65,
+          delay: PAGE_FADE_DURATION + 0.1,
+          ease: [0.25, 1, 0.5, 1],
+        }}
+        style={{
+          height: "32vh",
+          backgroundColor: "rgba(241,241,241,0.7)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        }}
       >
         <div
           className="flex flex-col h-full gap-2"
@@ -428,16 +512,16 @@ export default function Blodsukker() {
             </AnimatePresence>
           </div>
 
-          {/* Hint — stage 0 only */}
-          <AnimatePresence>
-            {stage === 0 && currentStep.hint && (
+          {/* Hint / Gender rows — swap smoothly with mode="wait" */}
+          <AnimatePresence mode="wait">
+            {stage === 0 && currentStep.hint ? (
               <motion.div
                 key="hint"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                className="flex flex-col items-center justify-center gap-2 mt-2"
+                transition={{ duration: 0.3 }}
+                className="flex flex-col items-center justify-center gap-2 mt-2 flex-1"
                 style={{ pointerEvents: "none" }}
               >
                 <motion.div
@@ -454,38 +538,22 @@ export default function Blodsukker() {
                   </p>
                 </motion.div>
               </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Gender rows — stage 1+ */}
-          <AnimatePresence>
-            {stage >= 1 && (
+            ) : (
               <motion.div
                 key="gender-rows"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8 }}
-                transition={{ duration: 0.4 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.35 }}
                 className="flex flex-col gap-2 flex-1 justify-center"
               >
-                <div className="w-full h-px bg-primary opacity-20 mb-2" />
-                <GenderRow
-                  label={t?.men || "Mænd"}
-                  gender="man"
-                  stage={stage}
-                  percent={PERCENTAGES.men}
-                />
-                <GenderRow
-                  label={t?.women || "Kvinder"}
-                  gender="woman"
-                  stage={stage}
-                  percent={PERCENTAGES.women}
-                />
+                <GenderRow gender="man" stage={stage} />
+                <GenderRow gender="woman" stage={stage} />
               </motion.div>
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </motion.div>
 
       {/* Fade to black */}
       <div

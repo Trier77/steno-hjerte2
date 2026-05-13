@@ -72,20 +72,19 @@ const translations = {
       sliderLow: "Normalt",
       sliderHigh: "Diabetes",
       stageLabels: ["Normalt blodsukker", "Forhøjet blodsukker", "Diabetes"],
-      bubbleText: "Diabetes giver mere sukker i blodet",
       steps: [
         {
           heading: "Diabetes og hjertet",
-          body: "Omkring de 50-60 år bliver flere mænd end kvinder ramt af hjerte-kar-sygdomme.",
+          body: "Diabetes er en sygdom, som gør, at man har for meget sukker i blodet. Sygdommen påvirker mænd og kvinders hjerter på forskellige måder. Omkring de 50-60 år bliver flere mænd end kvinder ramt af hjerte-kar-sygdomme.",
           hint: "Brug slideren og se hvad der sker med risikoen for hjerte-kar-sygdomme, hvis man får diabetes",
         },
         {
           heading: "Risikoen stiger",
-          body: "Både flere kvinder og flere mænd bliver ramt af hjerte-kar-sygdom, hvis de får diabetes.",
+          body: "Både flere kvinder og flere mænd bliver ramt af hjerte-kar-sygdom, hvis de får diabetes. Hvis 10 mænd omkring 50-60 år uden diabetes bliver ramt af en hjerte-kar-sygdom, vil omkring 7 kvinder uden diabetes blive ramt.",
         },
         {
           heading: "Diabetes gør hjertet sygt",
-          body: 'Diabetes påvirker kvinders hjerter hårdere end mænds. Forskere er stadig ikke helt sikre på, hvad det er, som gør diabetes "farligere" for kvinder.',
+          body: "Begge køns risiko for at få en hjerte-kar-sygdom stiger meget, hvis de bliver ramt af diabetes. Kvinders risiko stiger mere end mænds. Forskere er ikke sikre på, hvad der gør diabetes “farligere” for kvinder.",
         },
       ],
     },
