@@ -8,6 +8,7 @@ import BloodVesselAnimation from "../components/BloodVesselAnimation";
 import OvariesBackground from "../components/animated backgrounds/Ovariesbackground";
 import { useFadeIn } from "../hooks/useFadeIn";
 import { useFadeNavigate } from "../hooks/useFadeNavigate";
+import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
 const SNAP_POINTS = ["", "0-50", "50-60", "60-70", "70+", ""];
 const PAGE_FADE_DURATION = 0.4;
@@ -25,6 +26,7 @@ export default function Hormoner() {
   const startSliderRef = useRef(null);
   const fadeVisible = useFadeIn();
   const { fadeNavigate, fading } = useFadeNavigate();
+  useIdleTimeout(3);
 
   const content = t?.stages?.[activeIndex] || {};
 

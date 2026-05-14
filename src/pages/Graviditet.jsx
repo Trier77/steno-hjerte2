@@ -4,11 +4,13 @@ import FlagButton from "../components/FlagButton";
 import Speedometer from "../components/Speedometer";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
+import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
 function Graviditet() {
   const { language, visible } = useLanguage();
   const t = translations[language]?.graviditet;
   const [currentStep, setCurrentStep] = useState(0);
+  useIdleTimeout(3);
 
   const handleSegmentChange = useCallback((segmentId) => {
     if (segmentId !== null) setCurrentStep(segmentId);
@@ -58,10 +60,15 @@ function Graviditet() {
             </button>
           )}
         </div>
-        <div className="absolute -bottom-6 left-0 right-0" style={{ transformOrigin: "bottom center", transform: "scale(0.75)" }}>
-          <Speedometer onSegmentChange={handleSegmentChange} labels={t.labels} />
+        <div
+          className="absolute -bottom-6 left-0 right-0"
+          style={{ transformOrigin: "bottom center", transform: "scale(0.75)" }}
+        >
+          <Speedometer
+            onSegmentChange={handleSegmentChange}
+            labels={t.labels}
+          />
         </div>
-         
       </div>
     </div>
   );

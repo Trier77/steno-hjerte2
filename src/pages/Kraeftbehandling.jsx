@@ -4,6 +4,7 @@ import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 import { useState } from "react";
 import TumorButton from "../components/TumorButton";
+import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
 function TekstModul({ step, currentStep, onLinkTap }) {
   return (
@@ -37,6 +38,7 @@ function Kraeftbehandling() {
   const [showTumor, setShowTumor] = useState(true);
   const [showHint, setShowHint] = useState(false);
   const step = t.steps[currentStep];
+  useIdleTimeout(3);
 
   const handleTumorComplete = () => {
     setCurrentStep(1);
