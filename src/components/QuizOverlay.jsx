@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import translations from "../translations";
 
+// Nøgler til localStorage så vi kan huske scores og forsøg på tværs af sessioner
 const STORAGE_KEY = "hjerteskærm_quiz_scores";
+const ATTEMPTS_KEY = "hjerteskærm_quiz_attempts";
 
 // --- Storage helpers ---
 
@@ -10,6 +12,7 @@ function loadScores() {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
   } catch {
+    // Hvis localStorage er korrupt eller blokeret, returnerer vi bare et tomt array
     return [];
   }
 }
@@ -18,6 +21,7 @@ function saveScore(score, total) {
   try {
     const existing = loadScores();
     const entry = { score, total, date: Date.now() };
+    // Vi begrænser til de seneste 5000 forsøg så vi ikke fylder localStorage op
     const updated = [...existing, entry].slice(-5000);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     return updated;
@@ -25,23 +29,6 @@ function saveScore(score, total) {
     return [{ score, total, date: Date.now() }];
   }
 }
-
-function calcStats(allScores, myScore, total) {
-  const previous = allScores.slice(0, -1);
-  const myRatio = myScore / total;
-  let percentile = 50;
-  if (previous.length > 0) {
-    const beaten = previous.filter((s) => s.score / s.total < myRatio).length;
-    percentile = Math.round((beaten / previous.length) * 100);
-  }
-  return {
-    percentile,
-    totalVisitors: allScores.length,
-    totalAttempts: loadAttemptCount(),
-  };
-}
-
-const ATTEMPTS_KEY = "hjerteskærm_quiz_attempts";
 
 function loadAttemptCount() {
   try {
@@ -61,7 +48,26 @@ function incrementAttempts() {
   }
 }
 
-// --- Animation: count-up hook ---
+// Regner percentil ud baseret på tidligere forsøg.
+// Vi sammenligner brugerens score med alle tidligere (dvs. alle undtagen det nyeste element).
+// Vigtigt: incrementAttempts() skal kaldes FØR saveScore() og calcStats(),
+// ellers er tællingen én bagud når vi viser resultatet.
+function calcStats(allScores, myScore, total) {
+  const previous = allScores.slice(0, -1);
+  const myRatio = myScore / total;
+  let percentile = 50;
+  if (previous.length > 0) {
+    const beaten = previous.filter((s) => s.score / s.total < myRatio).length;
+    percentile = Math.round((beaten / previous.length) * 100);
+  }
+  return {
+    percentile,
+    totalAttempts: loadAttemptCount(),
+  };
+}
+
+// En lille hook der tæller op fra 0 til target over en given varighed.
+// startDelay bruges til at forskyde animationerne på resultatskærmen så de kommer ind én ad gangen.
 function useCountUp(target, duration = 1200, startDelay = 0) {
   const [value, setValue] = useState(0);
   useEffect(() => {
@@ -72,6 +78,7 @@ function useCountUp(target, duration = 1200, startDelay = 0) {
       const step = (now) => {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
+        // Ease-out kurve så det bremser op mod slutningen, føles mere smooth
         const eased = 1 - Math.pow(1 - progress, 3);
         setValue(Math.round(eased * target));
         if (progress < 1) requestAnimationFrame(step);
@@ -83,7 +90,8 @@ function useCountUp(target, duration = 1200, startDelay = 0) {
   return value;
 }
 
-// Inject heartbeat keyframe once
+// Vi injekter keyframes direkte i DOM'en én gang i stedet for at have det i en CSS-fil,
+// så animationerne altid er tilgængelige når komponenten bruges
 if (typeof document !== "undefined" && !document.getElementById("hb-style")) {
   const s = document.createElement("style");
   s.id = "hb-style";
@@ -106,13 +114,10 @@ if (typeof document !== "undefined" && !document.getElementById("hb-style")) {
   document.head.appendChild(s);
 }
 
-// --- Screen constants ---
 const SCREEN_INTRO = "intro";
 const SCREEN_QUESTION = "question";
 const SCREEN_EXPLANATION = "explanation";
 const SCREEN_RESULTS = "results";
-
-// --- Component ---
 
 function QuizOverlay({ onClose, visible }) {
   const { language } = useLanguage();
@@ -122,6 +127,9 @@ function QuizOverlay({ onClose, visible }) {
   const [fadeIn, setFadeIn] = useState(true);
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  // wasCorrect fanges på svartidspunktet og må ikke genberegnes efterfølgende,
+  // ellers kan den ændre sig mens fade-animationen kører
+  const [wasCorrect, setWasCorrect] = useState(null);
   const [showCorrect, setShowCorrect] = useState(false);
   const [score, setScore] = useState(0);
   const [stats, setStats] = useState(null);
@@ -129,11 +137,11 @@ function QuizOverlay({ onClose, visible }) {
   const [quitVisible, setQuitVisible] = useState(false);
 
   const question = t.questions[currentQ];
-  const isCorrect = selectedAnswer === question?.correct;
   const isActiveQuiz =
     screen === SCREEN_QUESTION || screen === SCREEN_EXPLANATION;
 
   const handleCloseAttempt = () => {
+    // Hvis quizzen er i gang, vis bekræftelsesdialog i stedet for at lukke direkte
     if (isActiveQuiz) {
       setShowQuitDialog(true);
       setTimeout(() => setQuitVisible(true), 10);
@@ -155,6 +163,7 @@ function QuizOverlay({ onClose, visible }) {
     setTimeout(() => setShowQuitDialog(false), 300);
   };
 
+  // Fade ud, skift screen, fade ind — giver en blød overgang mellem alle skærme
   const transitionTo = (nextScreen) => {
     setFadeIn(false);
     setTimeout(() => {
@@ -167,6 +176,7 @@ function QuizOverlay({ onClose, visible }) {
     setCurrentQ(0);
     setScore(0);
     setSelectedAnswer(null);
+    setWasCorrect(null);
     setShowCorrect(false);
     setStats(null);
     transitionTo(SCREEN_QUESTION);
@@ -174,28 +184,30 @@ function QuizOverlay({ onClose, visible }) {
 
   const handleAnswer = (index) => {
     if (selectedAnswer !== null) return;
+    const correct = index === question.correct;
     setSelectedAnswer(index);
-    if (index === question.correct) setScore((s) => s + 1);
+    setWasCorrect(correct);
+    if (correct) setScore((s) => s + 1);
+    // Lille forsinkelse så brugeren kan se sit valg markeret inden farven skifter
     setTimeout(() => setShowCorrect(true), 800);
-    setTimeout(() => {
-      setShowCorrect(false);
-      transitionTo(SCREEN_EXPLANATION);
-    }, 1600);
+    setTimeout(() => transitionTo(SCREEN_EXPLANATION), 1600);
   };
 
   const handleNext = () => {
     const nextQ = currentQ + 1;
+    // Nulstil svar-state FØR vi transitionerer, så fade-out ikke ser gammelt indhold
+    setSelectedAnswer(null);
+    setShowCorrect(false);
+    setWasCorrect(null);
     if (nextQ >= t.questions.length) {
-      const currentScore = selectedAnswer === question?.correct ? score : score;
-      const allScores = saveScore(currentScore, t.questions.length);
+      // Quizzen er færdig — gem score og beregn statistik
       incrementAttempts();
-      const computed = calcStats(allScores, currentScore, t.questions.length);
+      const allScores = saveScore(score, t.questions.length);
+      const computed = calcStats(allScores, score, t.questions.length);
       setStats(computed);
       transitionTo(SCREEN_RESULTS);
     } else {
       setCurrentQ(nextQ);
-      setSelectedAnswer(null);
-      setShowCorrect(false);
       transitionTo(SCREEN_QUESTION);
     }
   };
@@ -204,11 +216,13 @@ function QuizOverlay({ onClose, visible }) {
     setCurrentQ(0);
     setScore(0);
     setSelectedAnswer(null);
+    setWasCorrect(null);
     setShowCorrect(false);
     setStats(null);
     transitionTo(SCREEN_INTRO);
   };
 
+  // Returnerer Tailwind-klasser til svarmuligheder baseret på om der er svaret og om svaret er korrekt
   const getOptionStyle = (index) => {
     if (selectedAnswer === null) return "bg-secondary text-primary";
     if (showCorrect && index === question.correct)
@@ -240,7 +254,7 @@ function QuizOverlay({ onClose, visible }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
+        {/* Luk-knap */}
         <button
           onClick={handleCloseAttempt}
           className="absolute top-0 right-0 z-10 w-20 h-20 flex items-center justify-center rounded-full bg-ui-box text-primary shadow"
@@ -261,7 +275,7 @@ function QuizOverlay({ onClose, visible }) {
           </svg>
         </button>
 
-        {/* Quit confirmation dialog */}
+        {/* Bekræftelsesdialog når man forsøger at lukke midt i quizzen */}
         {showQuitDialog && (
           <div
             className="absolute inset-0 z-20 flex items-center justify-center rounded-3xl"
@@ -296,7 +310,7 @@ function QuizOverlay({ onClose, visible }) {
           </div>
         )}
 
-        {/* Screen content with fade animation */}
+        {/* Fade-wrapper rundt om alt skærm-indhold */}
         <div
           className="flex flex-col h-full"
           style={{
@@ -305,25 +319,25 @@ function QuizOverlay({ onClose, visible }) {
             transition: "opacity 0.3s ease, transform 0.3s ease",
           }}
         >
-          {/* INTRO SCREEN */}
+          {/* INTRO */}
           {screen === SCREEN_INTRO && (
             <div className="flex flex-col items-center justify-between h-full px-10 py-16">
               <h2 className="font-display font-semibold text-primary text-7xl mt-8">
                 {t.title}
               </h2>
-              <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
+              <p className="font-display font-semibold text-primary text-4xl text-center leading-relaxed">
                 {t.intro}
               </p>
               <button
                 onClick={handleStart}
-                className="bg-secondary text-primary font-display font-semibold text-4xl rounded-full px-16 py-5 mb-4"
+                className="bg-secondary text-primary font-display font-semibold text-5xl rounded-full px-15 py-5 mb-4"
               >
                 {t.startBtn}
               </button>
             </div>
           )}
 
-          {/* QUESTION SCREEN */}
+          {/* SPØRGSMÅL */}
           {screen === SCREEN_QUESTION && (
             <div className="flex flex-col h-full px-10 py-12">
               <div className="flex-1 flex items-center justify-center">
@@ -342,6 +356,7 @@ function QuizOverlay({ onClose, visible }) {
                   </button>
                 ))}
               </div>
+              {/* Fremgangsindikator — én prik per spørgsmål, aktiv prik er større */}
               <div className="flex items-center justify-center gap-3 mb-4">
                 {t.questions.map((_, i) => (
                   <div
@@ -357,20 +372,20 @@ function QuizOverlay({ onClose, visible }) {
             </div>
           )}
 
-          {/* EXPLANATION SCREEN */}
+          {/* FORKLARING */}
           {screen === SCREEN_EXPLANATION && (
             <div className="flex flex-col items-center justify-between h-full px-10 py-16">
-              <div className="rounded-full px-10 py-3 mt-8 bg-primary">
-                <span className="font-display font-semibold text-white text-3xl">
-                  {isCorrect ? t.correctLabel : t.wrongLabel}
+              <div className="mt-8">
+                <span className="font-display font-semibold text-primary text-7xl">
+                  {wasCorrect ? t.correctLabel : t.wrongLabel}
                 </span>
               </div>
-              <p className="font-display font-light text-primary text-2xl text-center leading-relaxed">
+              <p className="font-display font-light text-primary text-4xl text-center leading-relaxed">
                 {question.explanation}
               </p>
               <button
                 onClick={handleNext}
-                className="bg-secondary text-primary font-display font-semibold text-3xl rounded-full px-16 py-5 mb-4"
+                className="bg-secondary text-primary font-display font-semibold text-4xl rounded-full px-16 py-5 mb-4"
               >
                 {currentQ + 1 >= t.questions.length
                   ? t.resultsTitle
@@ -379,7 +394,7 @@ function QuizOverlay({ onClose, visible }) {
             </div>
           )}
 
-          {/* RESULTS SCREEN */}
+          {/* RESULTATER */}
           {screen === SCREEN_RESULTS && stats && (
             <ResultsScreen
               score={score}
@@ -395,13 +410,14 @@ function QuizOverlay({ onClose, visible }) {
   );
 }
 
-// --- Results screen as its own component so hooks run cleanly on mount ---
+// Resultatskærmen er sin egen komponent så useCountUp-hooks altid kører fra et clean mount
 function ResultsScreen({ score, total, stats, t, onPlayAgain }) {
   const animatedScore = useCountUp(score, 900, 200);
   const animatedPct = useCountUp(stats.percentile, 1400, 700);
   const [showPercentile, setShowPercentile] = useState(false);
   const [showButton, setShowButton] = useState(false);
 
+  // De tre elementer fader ind forskudt — score, så percentil, så knappen
   useEffect(() => {
     const t1 = setTimeout(() => setShowPercentile(true), 900);
     const t2 = setTimeout(() => setShowButton(true), 1800);
@@ -411,18 +427,8 @@ function ResultsScreen({ score, total, stats, t, onPlayAgain }) {
     };
   }, []);
 
-  const getMessage = (percentile) => {
-    const m = t.resultsMessages;
-    if (percentile >= 90) return m.top90;
-    if (percentile >= 70) return m.top70;
-    if (percentile >= 50) return m.top50;
-    if (percentile >= 30) return m.top30;
-    return m.below30;
-  };
-
   return (
     <div className="flex flex-col items-center h-full px-10 py-10">
-      {/* Header */}
       <h2
         className="font-display font-semibold text-primary leading-none mb-4 fade-slide-up"
         style={{ fontSize: "5.5rem", animationDelay: "0ms" }}
@@ -430,7 +436,7 @@ function ResultsScreen({ score, total, stats, t, onPlayAgain }) {
         {t.resultsHeading}
       </h2>
 
-      {/* Score — counts up */}
+      {/* Score tæller op fra 0 via useCountUp */}
       <p
         className="font-display font-semibold text-primary leading-none fade-slide-up"
         style={{ fontSize: "9rem", animationDelay: "100ms", opacity: 0 }}
@@ -441,10 +447,9 @@ function ResultsScreen({ score, total, stats, t, onPlayAgain }) {
         </span>
       </p>
 
-      {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Percentile block */}
+      {/* Percentil-blok fader ind lidt efter scoren */}
       <div
         className="flex flex-col items-center"
         style={{
@@ -456,6 +461,7 @@ function ResultsScreen({ score, total, stats, t, onPlayAgain }) {
         <p className="font-display font-normal text-primary text-3xl text-center mb-3">
           {t.resultsBetterThan}
         </p>
+        {/* Heartbeat-animationen starter kun når blokken er synlig */}
         <p
           className={`font-display font-semibold text-primary leading-none${showPercentile ? " heartbeat" : ""}`}
           style={{ fontSize: "7rem" }}
@@ -466,7 +472,7 @@ function ResultsScreen({ score, total, stats, t, onPlayAgain }) {
           {t.resultsOfVisitors}
         </p>
 
-        {/* Attempts — subtle line with standout number */}
+        {/* Lille note om hvor mange forsøg statistikken er baseret på */}
         <p
           className="font-display font-light text-primary opacity-35 text-center mt-4"
           style={{ fontSize: "1.1rem" }}
@@ -482,10 +488,9 @@ function ResultsScreen({ score, total, stats, t, onPlayAgain }) {
         </p>
       </div>
 
-      {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Button — fades in last */}
+      {/* Knappen fader ind sidst så brugeren får tid til at se resultatet først */}
       <button
         onClick={onPlayAgain}
         className="bg-secondary text-primary font-display font-semibold text-4xl rounded-full px-16 py-5"
