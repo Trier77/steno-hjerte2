@@ -35,6 +35,22 @@ export default function Depression() {
   const { fadeNavigate, fading } = useFadeNavigate();
   useIdleTimeout(3);
 
+  const NEURON_ILLUSTRATIONS = [
+    "/src/assets/icons/brain-depression1.svg",
+    "/src/assets/icons/brain-depression2.svg",
+    "/src/assets/icons/brain-depression3.svg",
+    "/src/assets/icons/brain-depression4.svg",
+  ];
+
+  const NEURON_ILLUSTRATION_SIZES = [
+    { width: "42%", height: "250px" },
+    { width: "42%", height: "200px" },
+    { width: "42%", height: "250px" },
+    { width: "42%", height: "280px" },
+  ];
+
+  const NEURON_LAYOUT = ["row", "row-reverse", "row-reverse", "row"];
+
   const content = t?.neurons?.[selected];
 
   const handleSelect = (index) => {
@@ -199,10 +215,15 @@ export default function Depression() {
           <h2 className="font-display font-semibold text-primary text-5xl text-center mb-3 leading-snug">
             {content?.heading || "[ Tekst fra museet ]"}
           </h2>
-          <div className="flex flex-row gap-10 flex-1 pt-5">
-            <div
-              className="bg-white/60 rounded-2xl shrink-0"
-              style={{ width: "42%", height: "300px" }}
+          <div
+            className="flex flex-row gap-10 flex-1 pt-5"
+            style={{ flexDirection: NEURON_LAYOUT[selected] }}
+          >
+            <img
+              src={NEURON_ILLUSTRATIONS[selected]}
+              alt=""
+              className="shrink-0 object-contain opacity-80"
+              style={NEURON_ILLUSTRATION_SIZES[selected]}
             />
             <p
               className="font-display font-light text-primary text-3xl leading-relaxed"

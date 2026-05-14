@@ -40,7 +40,7 @@ const translations = {
       ],
     },
     startside: {
-      heading: "Det oversete hjerte",
+      heading: "Det Oversete Hjerte",
       body: "Tryk på kroppen og dyk ned i oversete sammenhænge mellem krop, køn og hjerte-kar-sygdom",
     },
     hjerteknap: {
@@ -62,7 +62,7 @@ const translations = {
         },
         {
           heading: "Hjertesygdomme bliver værre af depression",
-          body: "Hvis man i forvejen har en hjerte-kar-sygdom, og bliver ramt af depression, vil sygdommen blive værre hurtigere.",
+          body: "Hvis man i forvejen har en hjerte-kar-sygdom, og bliver ramt af depression, vil sygdommen blive værre hurtigere. Nogle studier viser, at depression kan fordoble risikoen for hjertesygdom.",
         },
       ],
     },
@@ -313,7 +313,7 @@ const translations = {
         },
         {
           heading: "Heart disease gets worse with depression",
-          body: "If you already have cardiovascular disease and are affected by depression, the disease will get worse faster.",
+          body: "If you already have a cardiovascular disease and are struck by depression, the illness will worsen more quickly. Some studies show that depression can double the risk of heart disease.",
         },
       ],
     },
