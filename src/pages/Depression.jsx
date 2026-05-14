@@ -9,6 +9,7 @@ import translations from "../translations";
 import BrainBackground from "../components/animated backgrounds/Brainbackground";
 import { useFadeIn } from "../hooks/useFadeIn";
 import { useFadeNavigate } from "../hooks/useFadeNavigate";
+import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
 const NEURON_POSITIONS = [
   { top: "15%", left: "22%", rotation: -15 },
@@ -32,6 +33,7 @@ export default function Depression() {
   const [lineVisible, setLineVisible] = useState(false);
   const fadeVisible = useFadeIn();
   const { fadeNavigate, fading } = useFadeNavigate();
+  useIdleTimeout(3);
 
   const content = t?.neurons?.[selected];
 

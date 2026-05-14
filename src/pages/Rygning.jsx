@@ -7,6 +7,7 @@ import translations from "../translations";
 import LungsBackground from "../components/animated backgrounds/Lungsbackground";
 import { useFadeIn } from "../hooks/useFadeIn";
 import { useFadeNavigate } from "../hooks/useFadeNavigate";
+import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
 const PAGE_FADE_DURATION = 0.4;
 
@@ -22,6 +23,7 @@ export default function Rygning() {
   const startSliderRef = useRef(null);
   const fadeVisible = useFadeIn();
   const { fadeNavigate, fading } = useFadeNavigate();
+  useIdleTimeout(3);
 
   const activeSide = sliderX <= 0 ? "left" : sliderX >= 1 ? "right" : null;
 

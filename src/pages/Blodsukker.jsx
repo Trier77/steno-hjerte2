@@ -7,6 +7,7 @@ import translations from "../translations";
 import { useFadeIn } from "../hooks/useFadeIn";
 import { useFadeNavigate } from "../hooks/useFadeNavigate";
 import BloodBackground from "../components/animated backgrounds/BloodBackground";
+import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const PERSON_COUNT = 24;
@@ -251,6 +252,7 @@ export default function Blodsukker() {
   const t = translations[language]?.blodsukker;
   const fadeVisible = useFadeIn();
   const { fadeNavigate, fading } = useFadeNavigate();
+  useIdleTimeout(3);
 
   const [stage, setStage] = useState(0);
   const [sliderY, setSliderY] = useState(0);
