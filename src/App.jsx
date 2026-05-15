@@ -7,6 +7,7 @@ import Blodsukker from "./pages/Blodsukker";
 import Graviditet from "./pages/Graviditet";
 import Hormoner from "./pages/Hormoner";
 import "./App.css";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <Route path="/blodsukker" element={<Blodsukker />} />
       <Route path="/graviditet" element={<Graviditet />} />
       <Route path="/hormoner" element={<Hormoner />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

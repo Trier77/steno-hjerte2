@@ -14,5 +14,3 @@ createRoot(document.getElementById("root")).render(
     </LanguageProvider>
   </StrictMode>,
 );
-
-// Dette er en comment
