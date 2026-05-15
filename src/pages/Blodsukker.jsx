@@ -9,27 +9,28 @@ import { useFadeNavigate } from "../hooks/useFadeNavigate";
 import BloodBackground from "../components/animated backgrounds/BloodBackground";
 import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-const PERSON_COUNT = 24;
-const SNAP_POSITIONS = [0, 50, 100];
+// ─── Konstanter ───────────────────────────────────────────────────────────────
+const SNAP_POSITIONS = [0, 50, 100]; // slider-positioner i procent svarende til de tre stages
 const PAGE_FADE_DURATION = 0.4;
 
-// ─── Sugar cube flow ──────────────────────────────────────────────────────────
+// ─── Sukkerknalder ──────────────────────────────────────────────────────────
 
-// Each cube gets fixed random traits generated once — stable across re-renders
+// Hver terning får faste tilfældige egenskaber beregnet én gang, stabile på tværs af re-renders.
+// Vi bruger deterministisk matematik (i * primtal) i stedet for Math.random() så de ikke hopper rundt.
 const CUBE_TRAITS = Array.from({ length: 20 }, (_, i) => ({
   id: i,
-  y: 5 + ((i * 37 + 11) % 85), // spread vertically 5–90%
-  duration: 6 + ((i * 13) % 10), // 6–16s to cross screen
-  delay: -((i * 3.7) % 16), // stagger start so they're not bunched
+  y: 5 + ((i * 37 + 11) % 85), // vertikal placering 5–90%
+  duration: 6 + ((i * 13) % 10), // 6–16s om at krydse skærmen
+  delay: -((i * 3.7) % 16), // negativ delay gør at de starter midt i animationen
   size: 24 + ((i * 7) % 20), // 24–44px
   opacity: 0.5 + ((i * 11) % 40) / 100, // 0.5–0.9
-  wobble: ((i * 17) % 12) - 6, // slight vertical drift ±6px
+  wobble: ((i * 17) % 12) - 6, // lille vertikal drift ±6px
 }));
 
+// Antal terninger der vises per stage — flere terninger = mere sukker i blodet
 const STAGE_CUBE_COUNT = [3, 8, 20];
 
-// Inject keyframes once
+// CSS-animationen injektes direkte i DOM'en én gang så den altid er tilgængelig
 const FLOW_STYLE = `
 @keyframes sugarFlow {
   0%   { transform: translateX(-60px) translateY(0px); }
@@ -63,9 +64,9 @@ function SugarCube({ traits, entranceDelay }) {
         top: `${y}%`,
         left: 0,
         pointerEvents: "none",
-        // The inner div does the continuous drift
       }}
     >
+      {/* Det indre div håndterer den løbende drift på tværs af skærmen */}
       <div
         style={{
           "--wobble": `${wobble}px`,
@@ -112,6 +113,7 @@ function SugarCubes({ stage }) {
       className="absolute inset-0"
       style={{ pointerEvents: "none", zIndex: 5, overflow: "hidden" }}
     >
+      {/* AnimatePresence sørger for at terninger fader ud når stagen skifter */}
       <AnimatePresence>
         {CUBE_TRAITS.slice(0, count).map((traits, i) => (
           <SugarCube key={traits.id} traits={traits} entranceDelay={i * 0.05} />
@@ -121,16 +123,17 @@ function SugarCubes({ stage }) {
   );
 }
 
-// ─── Person icon ──────────────────────────────────────────────────────────────
+// ─── Personfigur ──────────────────────────────────────────────────────────────
 const GENDER_CONFIG = {
   man: { total: 10, redCount: 4, multiplier: "140%" },
   woman: { total: 10, redCount: 5, multiplier: "185%" },
 };
 
-const FIGURE_SIZE = 64; // px wide
-const FIGURE_HEIGHT = 110; // px tall — fixed so man/woman are identical height
+const FIGURE_SIZE = 64; // px bred
+const FIGURE_HEIGHT = 110; // px høj — fast så mænd og kvinder er samme højde
 
-// Crossfades between blue and red in-place — no unmount/remount
+// Blå og røde figurer ligger ovenpå hinanden og crossfader i stedet for at unmounte/remounte.
+// Det giver en blød overgang uden layout-hop.
 function PersonIcon({ gender, isRed, appearDelay, swapDelay }) {
   const blueSrc = `/src/assets/icons/${gender}-blue.svg`;
   const redSrc = `/src/assets/icons/${gender}-red.svg`;
@@ -151,7 +154,7 @@ function PersonIcon({ gender, isRed, appearDelay, swapDelay }) {
         flexShrink: 0,
       }}
     >
-      {/* Blue — always present, fades out when turning red */}
+      {/* Blå fader ud når figuren skal blive rød */}
       <motion.img
         src={blueSrc}
         alt=""
@@ -165,7 +168,7 @@ function PersonIcon({ gender, isRed, appearDelay, swapDelay }) {
           objectFit: "contain",
         }}
       />
-      {/* Red — layered on top, fades in when turning red */}
+      {/* Rød fader ind oven på den blå */}
       <motion.img
         src={redSrc}
         alt=""
@@ -189,7 +192,6 @@ function GenderRow({ gender, stage }) {
 
   return (
     <div className="relative flex flex-row items-center justify-center w-full">
-      {/* Figures — truly centered, badge is absolute so it doesn't push them */}
       <div className="flex flex-row items-end justify-center gap-1 w-full">
         {Array.from({ length: total }, (_, i) => {
           const isRed = stage === 2 && i >= total - redCount;
@@ -199,6 +201,7 @@ function GenderRow({ gender, stage }) {
               key={`${gender}-${i}`}
               gender={gender}
               isRed={isRed}
+              // Kun stagger-delay ved stage 1, ved stage 2 er figurerne allerede synlige
               appearDelay={stage === 1 ? i * 0.06 : 0}
               swapDelay={isRed ? redIndex * 0.1 : 0}
             />
@@ -206,7 +209,7 @@ function GenderRow({ gender, stage }) {
         })}
       </div>
 
-      {/* Multiplier badge — absolutely positioned so it doesn't affect centering */}
+      {/* Badge/tallene får absolute så den ikke påvirker centreringen af figurerne */}
       <div
         style={{
           position: "absolute",
@@ -246,7 +249,6 @@ function GenderRow({ gender, stage }) {
   );
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
 export default function Blodsukker() {
   const { language, visible } = useLanguage();
   const t = translations[language]?.blodsukker;
@@ -265,6 +267,9 @@ export default function Blodsukker() {
   const startSliderRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ w: 500, h: 900 });
 
+  // Refs bruges i event listeners for at undgå stale closures
+  // React state kan ikke læses korrekt inde i addEventListener-callbacks,
+  // så vi holder en synkroniseret ref-kopi af de værdier vi har brug for der.
   const isDraggingRef = useRef(false);
   const sliderYRef = useRef(0);
   const stageRef = useRef(0);
@@ -279,6 +284,7 @@ export default function Blodsukker() {
     stageRef.current = stage;
   }, [stage]);
 
+  // Tracker container-størrelsen så BloodBackground kan skalere korrekt
   useEffect(() => {
     const update = () => {
       if (containerRef.current) {
@@ -299,6 +305,7 @@ export default function Blodsukker() {
     const clamped = Math.max(0, Math.min(2, index));
     setIsSnapping(true);
     setSliderY(SNAP_POSITIONS[clamped] / 100);
+    // Lille forsinkelse så slider-animationen når at starte inden indholdet skifter
     if (clamped !== stageRef.current) {
       setTimeout(() => {
         setStage(clamped);
@@ -320,6 +327,7 @@ export default function Blodsukker() {
     const onMove = (e) => {
       if (!isDraggingRef.current) return;
       e.preventDefault();
+      // Vi bruger slider-elementets højde som reference for hvor langt man skal trække
       const height = sliderRef.current?.offsetHeight || 300;
       const delta = startYRef.current - getClientY(e);
       const newY = Math.max(
@@ -334,6 +342,7 @@ export default function Blodsukker() {
       if (!isDraggingRef.current) return;
       isDraggingRef.current = false;
       setIsDragging(false);
+      // Snap til nærmeste stage når brugeren slipper
       const nearest = Math.round(sliderYRef.current * 2);
       snapToIndex(nearest);
     };
@@ -355,7 +364,6 @@ export default function Blodsukker() {
       window.removeEventListener("touchend", onUp);
       track?.removeEventListener("touchstart", handlePointerDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const currentStep = t?.steps?.[stage] || {};
@@ -371,10 +379,10 @@ export default function Blodsukker() {
 
       <BloodBackground w={containerSize.w} h={containerSize.h} />
 
-      {/* Sugar cubes — rendered over the blood background, under the UI */}
+      {/* Sukkerknalderne er over baggrunden, under UI */}
       <SugarCubes stage={stage} />
 
-      {/* Upper area — vertical slider on the left */}
+      {/* Øverste område med den vertikale slider */}
       <div className="relative z-10 flex-1 flex flex-row px-8 gap-6">
         <motion.div
           className="flex items-center justify-center w-20"
@@ -396,7 +404,7 @@ export default function Blodsukker() {
             }}
             onMouseDown={handlePointerDown}
           >
-            {/* Fill — grows upward */}
+            {/* Fyldt del af slideren vokser opad med slideren */}
             <div
               className="absolute bottom-0 left-0 right-0 rounded-full bg-primary"
               style={{
@@ -409,7 +417,7 @@ export default function Blodsukker() {
               }}
             />
 
-            {/* Handle */}
+            {/* Håndtaget/selve den dot der er */}
             <div
               className="absolute left-1/2"
               style={{
@@ -435,6 +443,7 @@ export default function Blodsukker() {
                   ease: [0.34, 1.56, 0.64, 1],
                 }}
               >
+                {/* Ping-animation på stage 0 som hint til at slideren kan trækkes */}
                 {stage === 0 && (
                   <span className="absolute inset-0 rounded-full bg-primary opacity-40 animate-ping" />
                 )}
@@ -447,18 +456,9 @@ export default function Blodsukker() {
             </div>
           </div>
         </motion.div>
-
-        {/* Stage label */}
-        <motion.div
-          className="flex items-end pb-4"
-          style={{ marginBottom: "4vh" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: PAGE_FADE_DURATION + 0.6 }}
-        ></motion.div>
       </div>
 
-      {/* Infobox */}
+      {/* Infoboks */}
       <motion.div
         className="relative z-10 w-full rounded-t-4xl px-8 pt-6 pb-8"
         initial={{ y: 120, opacity: 0 }}
@@ -475,11 +475,13 @@ export default function Blodsukker() {
           WebkitBackdropFilter: "blur(12px)",
         }}
       >
+        {/* visible-prop fra LanguageContext skjuler indhold under sprogskift */}
         <div
           className="flex flex-col h-full gap-2"
           style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
         >
           <div style={{ minHeight: "80px" }}>
+            {/* mode="wait" sikrer at gammelt indhold er væk inden nyt fader ind */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={stage}
@@ -501,7 +503,7 @@ export default function Blodsukker() {
             </AnimatePresence>
           </div>
 
-          {/* Hint / Gender rows — swap smoothly with mode="wait" */}
+          {/* På stage 0 vises et hint og på stage 1 og 2 vises kønsfigurerne */}
           <AnimatePresence mode="wait">
             {stage === 0 && currentStep.hint ? (
               <motion.div
@@ -544,7 +546,7 @@ export default function Blodsukker() {
         </div>
       </motion.div>
 
-      {/* Fade to black */}
+      {/* Sort overlay der fader ind ved tilbage-navigation */}
       <div
         style={{
           position: "fixed",

@@ -11,6 +11,8 @@ import { useFadeIn } from "../hooks/useFadeIn";
 import { useFadeNavigate } from "../hooks/useFadeNavigate";
 import { useIdleTimeout } from "../hooks/useIdleTimeout";
 
+// Placering og rotation af de fire neuron-knapper på skærmen.
+// Koordinaterne er i procent så de skalerer med skærmstørrelsen.
 const NEURON_POSITIONS = [
   { top: "15%", left: "22%", rotation: -15 },
   { top: "25%", left: "68%", rotation: 25 },
@@ -18,6 +20,7 @@ const NEURON_POSITIONS = [
   { top: "44%", left: "74%", rotation: 10 },
 ];
 
+// Hvor lang tid side-fade-in-animationen tager — bruges til at forsinke efterfølgende animationer
 const PAGE_FADE_DURATION = 0.1;
 
 export default function Depression() {
@@ -35,6 +38,7 @@ export default function Depression() {
   const { fadeNavigate, fading } = useFadeNavigate();
   useIdleTimeout(3);
 
+  // Illustrationer og størrelser til hvert neuron-punkt — indeks matcher NEURON_POSITIONS
   const NEURON_ILLUSTRATIONS = [
     "/src/assets/icons/brain-depression1.svg",
     "/src/assets/icons/brain-depression2.svg",
@@ -49,12 +53,14 @@ export default function Depression() {
     { width: "42%", height: "280px" },
   ];
 
+  // Bestemmer om billede og tekst byttes om — giver lidt variation i layoutet
   const NEURON_LAYOUT = ["row", "row-reverse", "row-reverse", "row"];
 
   const content = t?.neurons?.[selected];
 
   const handleSelect = (index) => {
     if (index === selected) return;
+    // Fade indholdet ud, skift data, fade ind igen
     setContentVisible(false);
     setTimeout(() => {
       setSelected(index);
@@ -62,6 +68,7 @@ export default function Depression() {
     }, 300);
   };
 
+  // Venter med at vise signallinjen til UI-boksen er landet — ellers ser det rodet ud
   useEffect(() => {
     const uiBoxDelay = PAGE_FADE_DURATION + 0.3 + 2 * 0.15;
     const uiBoxDuration = 0.6;
@@ -74,6 +81,8 @@ export default function Depression() {
     return () => clearTimeout(t);
   }, []);
 
+  // Beregner og opdaterer SVG-stien mellem den valgte neuron og UI-boksen.
+  // Vi kører den på et interval fordi layout kan shifte lidt undervejs (f.eks. under animationer).
   useEffect(() => {
     const updatePath = () => {
       const container = containerRef.current;
@@ -85,12 +94,14 @@ export default function Depression() {
       const neuronRect = neuronEl.getBoundingClientRect();
       const boxRect = box.getBoundingClientRect();
 
+      // Startpunkt = centrum af neuronen, slutpunkt = toppen af UI-boksen
       const startX =
         neuronRect.left + neuronRect.width / 2 - containerRect.left;
       const startY = neuronRect.top + neuronRect.height / 2 - containerRect.top;
       const endX = boxRect.left + boxRect.width / 2 - containerRect.left;
       const endY = boxRect.top - containerRect.top;
 
+      // Cubic bezier kontrolpunkter — giver den bløde kurve ned mod boksen
       const cp1X = startX + (endX - startX) * 0.1;
       const cp1Y = startY + (endY - startY) * 0.5;
       const cp2X = endX - (endX - startX) * 0.1;
@@ -120,7 +131,7 @@ export default function Depression() {
       <BackButton onClick={() => fadeNavigate("/")} />
       <BrainBackground />
 
-      {/* SVG signal line */}
+      {/* Animeret signallinje fra neuron til UI-boks */}
       {path && (
         <svg
           className="absolute inset-0 pointer-events-none z-10"
@@ -140,6 +151,7 @@ export default function Depression() {
             strokeOpacity="0.35"
             strokeDasharray="10 8"
           />
+          {/* To kugler der løber langs stien med en halv periode forskydning */}
           <circle
             r="8"
             fill="var(--color-ui-box)"
@@ -164,7 +176,7 @@ export default function Depression() {
         </svg>
       )}
 
-      {/* Neurons */}
+      {/* Neuron-knapper — staggered fade-in via Framer Motion */}
       {NEURON_POSITIONS.map((pos, i) => (
         <motion.div
           key={i}
@@ -176,7 +188,7 @@ export default function Depression() {
           transition={{
             duration: 0.7,
             delay: PAGE_FADE_DURATION + 0.3 + i * 0.15,
-            ease: [0.34, 1.56, 0.64, 1],
+            ease: [0.34, 1.56, 0.64, 1], // Lille overshoot så de popper ind
           }}
         >
           <div style={{ transform: `rotate(${pos.rotation}deg)` }}>
@@ -191,7 +203,7 @@ export default function Depression() {
         </motion.div>
       ))}
 
-      {/* UI box */}
+      {/* UI-boks der slider op fra bunden når siden loader */}
       <motion.section
         ref={boxRef}
         className="absolute w-screen bg-ui-box/70 bottom-0 rounded-t-4xl z-20 px-8 pt-6 pb-8"
@@ -204,6 +216,7 @@ export default function Depression() {
           ease: [0.4, 0, 0.2, 1],
         }}
       >
+        {/* visible-prop fra LanguageContext sikrer at indhold er skjult under sprogskift */}
         <div
           className="flex flex-col h-full"
           style={{
@@ -235,7 +248,7 @@ export default function Depression() {
         </div>
       </motion.section>
 
-      {/* Fade to black on back navigation */}
+      {/* Sort overlay der fader ind ved tilbage-navigation */}
       <div
         style={{
           position: "fixed",
