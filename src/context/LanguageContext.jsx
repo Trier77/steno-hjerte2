@@ -3,13 +3,16 @@ import { createContext, useContext, useState } from "react";
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState("da");
+  const [language, setLanguage] = useState(
+    () => localStorage.getItem("language") ?? "da",
+  );
   const [visible, setVisible] = useState(true);
 
   const switchLanguage = (lang) => {
     setVisible(false);
     setTimeout(() => {
       setLanguage(lang);
+      localStorage.setItem("language", lang);
       setVisible(true);
     }, 300);
   };
