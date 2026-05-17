@@ -5,6 +5,9 @@ import translations from "../translations";
 import { useState } from "react";
 import TumorButton from "../components/TumorButton";
 import { useIdleTimeout } from "../hooks/useIdleTimeout";
+import tumorani from "../assets/tumorani.webm"
+import rayOverlay from "../assets/rayOverlay.webm"  // din overlay video
+import notumorani from "../assets/notumorani.webm"            // din nye baggrund
 
 function TekstModul({ step, currentStep, onLinkTap }) {
   return (
@@ -37,40 +40,70 @@ function Kraeftbehandling() {
   const [currentStep, setCurrentStep] = useState(0);
   const [showTumor, setShowTumor] = useState(true);
   const [showHint, setShowHint] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [showNewBg, setShowNewBg] = useState(false);
   const step = t.steps[currentStep];
   useIdleTimeout(3);
 
   const handleTumorComplete = () => {
-    setCurrentStep(1);
+    // Start overlay — tekst skifter IKKE endnu
+    setShowOverlay(true);
     setTimeout(() => setShowTumor(false), 800);
   };
 
-  const handleLinkTap = () => {
-    setShowHint(true);
+  const handleOverlayEnded = () => {
+    // Overlay færdig → skift baggrund og tekst samtidig
+    setShowOverlay(false);
+    setShowNewBg(true);
+    setCurrentStep(1);
   };
 
-  const handleTumorStart = () => {
-    setShowHint(false);
-  };
+  const handleLinkTap = () => setShowHint(true);
+  const handleTumorStart = () => setShowHint(false);
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <FlagButton />
       <BackButton />
 
-      {/* Background image/video goes here later */}
+      {/* Baggrund 1: tumorani — fader ud når ny baggrund vises */}
+      <video
+        src={tumorani}
+        autoPlay loop muted playsInline
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+        style={{ zIndex: 0, opacity: showNewBg ? 0 : 1 }}
+      />
+
+      {/* Baggrund 2: ny baggrund — fader ind når overlay er færdig */}
+      <video
+        src={notumorani}
+        autoPlay loop muted playsInline
+        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+        style={{ zIndex: 1, opacity: showNewBg ? 1 : 0 }}
+      />
+
+      {/* Overlay video — spiller én gang henover alt */}
+      {showOverlay && (
+        <video
+          src={rayOverlay}
+          autoPlay muted playsInline
+          onEnded={handleOverlayEnded}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ zIndex: 20 }}
+        />
+      )}
 
       {/* Tumor button + hint */}
       {showTumor && (
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           style={{
+            zIndex: 10,
             opacity: currentStep === 0 ? 1 : 0,
             transition: "opacity 0.8s ease",
             pointerEvents: currentStep === 0 ? "auto" : "none",
           }}
         >
-          {/* Hint tooltip */}
           <div
             className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white rounded-full px-4 py-2 whitespace-nowrap"
             style={{
@@ -91,9 +124,13 @@ function Kraeftbehandling() {
         </div>
       )}
 
-      {/* Language fade wrapper */}
+      {/* Tekst — skifter kun efter overlay er færdig */}
       <div
-        style={{ opacity: visible ? 1 : 0, transition: "opacity 0.3s ease" }}
+        style={{
+          zIndex: 30,
+          opacity: visible ? 1 : 0,
+          transition: "opacity 0.3s ease",
+        }}
       >
         <TekstModul
           step={step}

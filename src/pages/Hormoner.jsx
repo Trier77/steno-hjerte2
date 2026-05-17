@@ -9,6 +9,7 @@ import OvariesBackground from "../components/animated backgrounds/Ovariesbackgro
 import { useFadeIn } from "../hooks/useFadeIn";
 import { useFadeNavigate } from "../hooks/useFadeNavigate";
 import { useIdleTimeout } from "../hooks/useIdleTimeout";
+import halvliv from "../assets/halvliv.webm"
 
 const SNAP_POINTS = ["", "0-50", "50-60", "60-70", "70+", ""];
 const PAGE_FADE_DURATION = 0.4;
@@ -112,6 +113,15 @@ export default function Hormoner() {
       <FlagButton />
       <BackButton onClick={() => fadeNavigate("/")} />
       <OvariesBackground />
+      <video
+                src={halvliv}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute bottom-85 left-0 w-full h-full"
+                style={{ zIndex: 0 }}
+              />
 
       <div className="flex-1" />
 
