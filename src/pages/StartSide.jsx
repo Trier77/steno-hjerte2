@@ -49,7 +49,7 @@ export default function StartSide() {
 
   return (
     <div
-      className={`min-h-screen bg-bg page-fade-in ${fadeVisible ? "visible" : ""}`}
+      className={`min-h-screen overflow-hidden bg-bg page-fade-in ${fadeVisible ? "visible" : ""}`}
     >
       <section className="left-0 top-0 relative">
         <img

@@ -8,6 +8,8 @@ import LungsBackground from "../components/animated backgrounds/Lungsbackground"
 import { useFadeIn } from "../hooks/useFadeIn";
 import { useFadeNavigate } from "../hooks/useFadeNavigate";
 import { useIdleTimeout } from "../hooks/useIdleTimeout";
+import leftAni from "../assets/smok.webm"
+import rightAni from "../assets/nosmok.webm"
 
 const PAGE_FADE_DURATION = 0.4;
 
@@ -92,6 +94,30 @@ export default function Rygning() {
       <FlagButton />
       <BackButton onClick={() => fadeNavigate("/")} />
       <LungsBackground />
+
+      {/* Left animation — clipped til venstre side */}
+      <video
+        src={leftAni}
+        autoPlay loop muted playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{
+          zIndex: 5,
+          clipPath: `inset(0 ${100 - sliderX * 100}% 0 0)`,
+          transition: snapTransition,
+        }}
+      />
+
+      {/* Right animation — clipped til højre side */}
+      <video
+        src={rightAni}
+        autoPlay loop muted playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{
+          zIndex: 5,
+          clipPath: `inset(0 0 0 ${sliderPercent})`,
+          transition: snapTransition,
+        }}
+      />
 
       {/* Left overlay */}
       <div
